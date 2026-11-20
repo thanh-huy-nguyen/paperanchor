@@ -1,0 +1,80 @@
+% =====================================================================================================================
+\section{Related work}
+\label{sec:related}
+
+\begin{table}[t]
+  \centering
+  \caption{Where existing checks on a paper's numbers sit, and what each can do. Rows are families of checks with
+  representative systems. \cmark{} means the family has the property, \xmark{} that it does not, and \pmark{} that
+  it holds in part. The first three rows are placements we measure directly in Section~\ref{sec:results}.}
+  \label{tab:families}
+  \small
+  \setlength{\tabcolsep}{4.5pt}
+  \begin{tabular}{@{}p{0.39\linewidth}ccccc@{}}
+    \toprule
+    \rowcolor{headgray}
+    Family of check & \makecell{Recomputes\\from raw data} & \makecell{Runs at\\the edit} & \makecell{No model\\call} &
+    \makecell{Returns the\\right value} & \makecell{Agent writes\\freely} \\
+    \midrule
+    LLM reviewer in the loop~\cite{jin2024agentreview,goyal2026scholarpeer,song2026paperorchestra}
+        & \xmark & \xmark & \xmark & \xmark & \cmark \\
+    Audit agent on the finished paper~\cite{chen2026fabscore,shen2026reagent,meng2026scientistone}
+        & \cmark & \xmark & \xmark & \cmark & \cmark \\
+    Value lookup or registry~\cite{autoresearchclaw2026,alfaqeeh2026misattributed}
+        & \xmark & \xmark & \cmark & \pmark & \cmark \\
+    Claims bound at render time~\cite{solatorio2025pcn}
+        & \xmark & \pmark & \cmark & \pmark & \pmark \\
+    Numbers generated from code~\cite{xie2015knitr,allaire2026quarto,ifargan2024datatopaper}
+        & \cmark & \cmark & \cmark & \cmark & \xmark \\
+    \midrule
+    \ours \tool{} (ours) & \cmark & \cmark & \cmark & \cmark & \cmark \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\paragraph{Agents that write and revise papers.}
+End-to-end research agents produce papers from their own
+experiments~\cite{lu2024aiscientist,yamada2025aiscientistv2,meng2026scientistone}, and writing systems turn a
+researcher's materials into a manuscript~\cite{song2026paperorchestra}. Such systems end with a refinement loop that
+keeps a revision only if a simulated reviewer scores it higher~\cite{song2026paperorchestra}, or improve the research
+agent through automated review~\cite{weng2024cycleresearcher}, with reviewer agents built for the
+purpose~\cite{jin2024agentreview,goyal2026scholarpeer}. Venues now receive papers written and reviewed this
+way~\cite{bianchi2025agents4science}. Iterative self-refinement against an LLM judge is known to drift toward what
+the judge rewards~\cite{pan2024spontaneous}, research agents that control their own evaluation can game
+it~\cite{rewardhackingresearch2026}, and targeted verification is one known remedy for reward hacking in coding
+agents~\cite{verificationhorizon2026}. We do not build a writer. We ask what such loops need in order to keep their
+numbers tied to the data, and we supply that part.
+
+\paragraph{LLM reviewers and what they miss.}
+Fabricated papers reach high acceptance rates with LLM reviewers, which flag integrity problems and accept
+anyway~\cite{badscientist2026}. Reviewers localize errors in papers poorly~\cite{flaws2025}, and their scores can be
+raised by rewording the abstract~\cite{li2026rewording}, by hidden prompts~\cite{sahoo2025injection}, or by
+presentation-only revisions found in a closed loop~\cite{nohiddenprompts2026}. Detecting pitfalls of AI scientist
+systems improves sharply when the detector sees the logs as well as the paper~\cite{luo2025pitfalls}. We add a
+paired measurement on real post-cutoff papers: the same paper with numbers made wrong, deleted, or with all evidence
+removed, scored by three reviewer sizes, together with whether the review text mentions the planted value.
+
+\paragraph{Auditing the numbers of finished papers.}
+FabScore runs a coding agent over a finished paper and its repository, executing code per extracted
+claim~\cite{chen2026fabscore}. ReAgent audits agent-written papers against their artifacts~\cite{shen2026reagent}.
+ScientistOne keeps a chain of evidence while it writes and audits finished papers with four integrity checks, one of
+which re-runs the solution and compares its score with the paper's; its authors place real-time verification during
+paper production outside their scope~\cite{meng2026scientistone}. AutoResearchClaw checks a finished draft against a
+value registry the writer cannot edit~\cite{autoresearchclaw2026}, and a deterministic claim-to-evidence checker
+shows that most unsupported numbers in agent-written papers are real values from the agent's files put in the wrong
+place~\cite{alfaqeeh2026misattributed}. Citation checkers do the same for
+references~\cite{gptzero2026neurips,refverifier2026}, and statcheck and the GRIM test recompute reported statistics
+from the numbers printed beside them~\cite{nuijten2016statcheck,brown2017grim}. All of these run after the paper is
+written. Our check runs at the edit, recomputes a computation the writer named instead of searching for a matching
+value, and we compare it with an audit agent of this kind at a matched alarm rate.
+
+\paragraph{Numbers that carry their provenance.}
+Literate-programming tools such as knitr~\cite{xie2015knitr} and Quarto~\cite{allaire2026quarto} generate each number
+from code, so it cannot go stale, and showyourwork extends the idea to a whole article and its
+figures~\cite{luger2021showyourwork}. Data-to-paper links every result number in an agent-written paper to the code
+that produced it, for a human reader~\cite{ifargan2024datatopaper}. Proof-Carrying Numbers binds each number an LLM
+emits to a structured claim and checks it at render time~\cite{solatorio2025pcn}, and VeriGraph trains an agent to
+build an evidence graph from raw data to claims~\cite{jin2026verigraph}. Claim verification against scientific tables
+is an established benchmark~\cite{lu2023scitab}. \tool{} borrows the recipe from literate programming and offers
+generation as one of its modes, but its main object is a free-form agent editing a paper: the check runs inside the
+agent's edit loop, and we measure which placement in that loop removes errors (Table~\ref{tab:families}).

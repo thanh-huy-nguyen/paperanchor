@@ -1,0 +1,73 @@
+% =====================================================================================================================
+\section{Using \tool{}}
+\label{sec:using}
+
+\tool{} ships as a Claude Code plugin with a command-line tool inside it. This section describes what a user installs
+and what happens in a session, with the choices our measurements support.
+
+\paragraph{Setup.}
+The plugin is installed once and stays silent until a project opts in. A project opts in by having a file
+\code{paper/sources.py}, which \code{plumbline init} creates:
+\begin{lstlisting}[language=bash]
+$ claude plugin marketplace add thanh-huy-nguyen/plumbline
+$ claude plugin install plumbline@plumbline
+$ cd my-project && plumbline init     # creates paper/sources.py and snapshots the repository
+\end{lstlisting}
+The paper's preamble gains two lines that make the tags invisible in the typeset output. Nothing else about the
+paper changes.
+\begin{lstlisting}
+\providecommand{\src}[1]{}       % tag after a number: prints nothing
+\providecommand{\val}[2][1]{}    % placeholder filled by `plumbline fill`
+\end{lstlisting}
+
+\paragraph{What happens in a session.}
+At session start, the plugin snapshots the repository and tells the agent the convention in a few lines, so the user
+does not have to put it in a prompt. A bundled skill teaches the agent how to write recipes. From then on every edit
+to \code{paper/*.tex} is checked (Table~\ref{tab:events}). The agent writes the recipe first and the number second,
+and a number that does not follow comes back with the value the data gives.
+
+\begin{table}[t]
+  \centering
+  \caption{What \tool{} does at each point of a Claude Code session, by mode. Feedback is the default.}
+  \label{tab:events}
+  \small
+  \setlength{\tabcolsep}{5pt}
+  \begin{tabular}{@{}p{0.27\linewidth}p{0.32\linewidth}p{0.33\linewidth}@{}}
+    \toprule
+    \rowcolor{headgray}
+    Event & Feedback mode & Gate mode \\
+    \midrule
+    Session start & \multicolumn{2}{l}{Snapshot the repository; tell the agent the convention} \\
+    Edit or write to the paper & Keep the edit; report every failing number & Deny the edit if a number it adds or
+    changes fails \\
+    Shell command that changes the paper & Keep the change; report failures & Revert the change \\
+    Agent stops & Nothing & Keep the session going while a tagged number fails, up to 3 times \\
+    Commit (git hook) & \multicolumn{2}{l}{Recheck every tagged number in staged papers; refuse the commit on a failure} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\paragraph{Which mode to use.}
+Feedback is the default because it reached the gate's outcome with fewer than half the turns
+(Table~\ref{tab:placement}). The gate is for sessions that run unattended and must not end with a failing number.
+Generate mode suits result-heavy sections: the agent writes \valmacro{} and \code{plumbline fill} types the number,
+so a rerun of the experiments updates the paper without another writing session. A log mode records every decision
+and shows the agent nothing, which is how we ran the arms without a check.
+
+\paragraph{What it costs.}
+The check makes no model call. A full recheck of a paper reruns every recipe; on the eight papers of the placement
+study, which carry between 21 and 194 tagged numbers (Appendix Table~\ref{tab:repos}), it took \checktime{}. The cost a user feels is in the writing: the
+agent spends a few lines of Python on each number, and in our study it wrote fewer new numbers when it had to justify
+each one (Table~\ref{tab:placement}).
+
+\paragraph{Outside Claude Code.}
+The command-line tool does not need an agent. \code{plumbline check} verifies every tagged number of a paper and
+exits non-zero on a failure, so it can run in continuous integration, and \code{plumbline git-hook} installs it as a
+pre-commit hook. A co-author who edits a number by hand is held to the same recipes as the agent.
+
+\paragraph{What to watch for.}
+Three engineering failures surfaced in our early runs, and each made a broken hook look like a passing one: a hook
+that exceeded its timeout did nothing, an agent that changed directory made the hook look for the paper in the wrong
+place, and a hook that covered only the edit tools missed an agent that edited the paper through the shell. \tool{}
+now logs every decision, resolves the project root from the edited file, and covers shell commands. A check that can
+fail silently should be assumed to have done so until its log says otherwise.

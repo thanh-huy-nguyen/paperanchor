@@ -1,0 +1,62 @@
+% =====================================================================================================================
+\section{Introduction}
+\label{sec:intro}
+
+A researcher finishes a set of experiments, opens a coding agent in the repository, and asks it to write the paper.
+The agent reads the result files, drafts the sections, and then revises the draft in a loop with an LLM reviewer until
+the score stops rising. Whole-paper systems already work this
+way~\cite{lu2024aiscientist,yamada2025aiscientistv2,song2026paperorchestra,meng2026scientistone}, and the reviewer in
+the loop is often itself a simulated peer-review system~\cite{jin2024agentreview,goyal2026scholarpeer}. Somewhere in
+the third round of revision the agent rewrites a results paragraph, and an accuracy that the data puts at 81.8\%
+becomes 84.8\%. Nobody typed it on purpose. The sentence reads well, the table two pages later still holds the true
+value, and the reviewer's next score is no lower.
+
+A reader of the finished paper trusts every number in it to follow from the data. A wrong number in a results
+paragraph is the error a co-author is least likely to catch and a later paper most likely to cite. Yet the loop
+above contains no step whose job is to compare a typed number with the data behind it.
+
+The checks that exist come after the writing is done. Either the reviewer is expected to notice the wrong number, or
+an audit agent re-derives the numbers of the finished
+paper~\cite{chen2026fabscore,shen2026reagent,autoresearchclaw2026,meng2026scientistone}. Both sit far from where the
+error is made, which is a single edit, and both assume something about how errors look. LLM reviewers raise integrity
+concerns and accept the paper anyway~\cite{badscientist2026}. An audit that matches printed numbers against stored
+values has a different problem: a revising agent computes new analyses from raw files that the repository never
+summarized, so a lookup flags correct work and accepts the wrong numbers that happen to land near a stored value.
+Software engineering solved the same problem decades ago by moving the check to the keystroke. A type error is caught
+by the compiler, not by the colleague who reads the pull request.
+
+We ask where in a writing agent's loop a number check should sit, and we answer by measuring every placement on the
+same agents and repositories. To make the edit-time placements possible we built \tool{}
+(Fig.~\ref{fig:overview}). The agent leaves a short recipe beside every number it adds or changes: a tag in the
+\LaTeX{} source and a Python function that reads the repository's raw data and returns the unrounded value, together
+with a one-line statement of what it computes. A Claude Code hook reruns the recipe at the edit and tests whether the
+printed number follows at its printed precision. The same check can run as a tool the agent may call, as feedback
+after every edit, or as a gate that refuses the edit. In a generate mode, the build fills in the number from the
+recipe, so the agent never types it. The check is deterministic, makes no model call, and on most papers takes about a second.
+
+Measuring placements needs a testbed in which the right answer is known, so we assembled \bench{}. It holds 60 arXiv
+papers posted after the models' training cutoff, each in five versions with planted and deleted numbers; 10 research
+repositories with public raw results, on which agents write and revise under reviewer pressure; a random sample of 300
+numbers those agents wrote, audited blind by two models and recomputed by hand; and 24 papers seeded with errors that
+flatter the paper's own method, each revised under five placements of the check and two controls.
+
+The measurements tell one story. Reviewers find the planted wrong numbers and write them into their reviews, and
+their scores stay where they were: \emph{the review names the error, but the score does not carry it}. Writers that
+revise under review add many numbers, almost all of them correct values computed from raw data, and the few wrong ones
+are invisible to a lookup of stored values and to a trace of the finished paper. Recomputing the agent's own recipe
+finds them. Whether the check then helps depends entirely on placement. Offered as a tool to our main writer, it leaves as many planted errors as no check, and how much an offered
+check removes changes with the writer. Run by itself at the edit, it removes every one of them, for three writer
+models and for a writer told to keep its results favorable, and a placebo that refuses edits just as often without checking does no better than no check.
+
+Our core contributions are:
+\begin{itemize}
+  \item \tool{}: an edit-time recompute check for the numbers a writing agent types. The agent writes a recipe for
+        each number, and a hook reruns it against a snapshot of the raw data, with feedback, gate, and generate
+        modes. We release it as a Claude Code plugin, a command-line tool, and a git pre-commit hook.
+  \item \bench{}: a testbed for number checks in agent-written papers, with post-cutoff papers for reviewers, real
+        repositories for writers, a human-recomputed sample of the numbers agents add, and a planted-error protocol
+        that separates flattering errors from neutral ones.
+  \item A placement study: we show that LLM reviewers of three sizes quote wrong numbers without pricing them, that
+        recomputation finds the errors that value lookup and post-hoc tracing miss, and that among five placements only the ones that run without being asked remove errors, with blocking adding nothing over feedback,
+        even for a writer told to protect its results.
+\end{itemize}

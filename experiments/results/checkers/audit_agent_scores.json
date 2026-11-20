@@ -1,0 +1,86 @@
+{
+ "recompute": {
+  "err": [
+   12,
+   13
+  ],
+  "disputed": [
+   5,
+   9
+  ],
+  "ok": [
+   24,
+   193
+  ]
+ },
+ "audit_sonnet": {
+  "err": [
+   4,
+   13
+  ],
+  "disputed": [
+   0,
+   9
+  ],
+  "ok": [
+   0,
+   193
+  ]
+ },
+ "audit_sonnet_sens@4": {
+  "err": [
+   8,
+   13
+  ],
+  "disputed": [
+   2,
+   9
+  ],
+  "ok": [
+   18,
+   193
+  ]
+ },
+ "audit_sonnet_sens@50": {
+  "err": [
+   1,
+   13
+  ],
+  "disputed": [
+   0,
+   9
+  ],
+  "ok": [
+   1,
+   193
+  ]
+ },
+ "audit_opus_sens@6": {
+  "err": [
+   11,
+   13
+  ],
+  "disputed": [
+   3,
+   9
+  ],
+  "ok": [
+   16,
+   193
+  ]
+ },
+ "audit_opus_sens@50": {
+  "err": [
+   11,
+   13
+  ],
+  "disputed": [
+   1,
+   9
+  ],
+  "ok": [
+   0,
+   193
+  ]
+ }
+}

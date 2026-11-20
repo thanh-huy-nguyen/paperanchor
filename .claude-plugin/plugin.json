@@ -1,0 +1,39 @@
+{
+  "name": "plumbline",
+  "version": "0.1.0",
+  "description": "Every number a coding agent writes into paper/*.tex must recompute from the repository's raw data: a short recipe per number, checked by hooks at each edit.",
+  "keywords": [
+    "latex",
+    "papers",
+    "research",
+    "numbers",
+    "verification"
+  ],
+  "userConfig": {
+    "mode": {
+      "type": "string",
+      "title": "Check mode",
+      "description": "feedback: report failing numbers after each edit and never block (default). gate: deny edits whose numbers do not recompute, revert shell writes to .tex, block Stop while a number fails. log: only log.",
+      "options": [
+        "feedback",
+        "gate",
+        "log"
+      ],
+      "default": "feedback"
+    },
+    "max_stop_blocks": {
+      "type": "number",
+      "title": "Stop blocks (gate mode)",
+      "description": "How many times the gate may keep a session from ending while a tagged number fails.",
+      "default": 3,
+      "min": 0,
+      "max": 20
+    }
+  },
+  "author": {
+    "name": "The Plumbline authors"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/thanh-huy-nguyen/plumbline",
+  "repository": "https://github.com/thanh-huy-nguyen/plumbline"
+}

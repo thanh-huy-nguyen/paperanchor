@@ -1,0 +1,40 @@
+% =====================================================================================================================
+\section{Discussion}
+\label{sec:discussion}
+
+Software engineering settled long ago where checks belong: a type error is caught when the code is compiled, not by
+the colleague who reads the pull request. The numbers in an agent-written paper are in the same position. The reviewer
+in the loop reads the paper and even names the wrong value, but its score does not carry that judgment back to the
+writer. An audit of the finished paper can find errors, and a strong one finds most of them, but it reports after the
+agent has moved on. A recipe rerun at the edit closes that loop where the error is made, in the same turn, with the
+correct value attached, and our placement study shows that an agent who receives that message fixes the number instead
+of defending it.
+
+The result is less about our checker than about where any checker sits. Agent harnesses expose hooks around tool
+calls, and most of what is written about them concerns safety: blocking a destructive command or a write outside the
+workspace. The same hooks are a place to run domain checks that are cheap, deterministic, and specific, and our
+measurements say that this is where such checks pay off. Telling an agent in its prompt that a check exists is not
+the same as running it. The prompted tool and the automatic hook contain the same code and the same rules. For our main
+writer, one leaves the paper as it would be with no check and the other removes every planted error. Other writers
+left fewer planted errors with the offer, and the largest left none, but a user cannot count on which writer they
+have; the hook gave the same outcome for all three.
+
+The recipe also changes what a paper carries. Each number arrives with the computation that produced it and a
+sentence saying what that computation means, which a co-author can read, a reviewer can rerun, and a second model can
+compare against the prose. Generate mode goes one step further and removes the need to type a result number by hand.
+The two checkers we studied fail on different numbers, which suggests a division of labor: recomputation at every
+edit for values and rounding, and an occasional strong audit for meaning.
+
+\paragraph{Limitations and open directions.}
+The placement study covers 8 repositories and three writer models from one family, run in one agent harness, and we
+ran the arm without any check for only one of the three. Its planted
+errors sit on numbers that already carry a working recipe, which is the favorable case for a recompute check: an
+error whose recipe is itself wrong belongs to the blind spot measured in Section~\ref{sec:checkers}. The pre-commit
+path brings the check to other agents and editors, and open-weight writers are a natural next test. The check trusts
+the writer's statement of what a number means, and a check of the \code{means} string against the sentence would
+close the gap behind both of recompute's misses. Our instruction to protect the results is one
+sentence in a prompt. A writer that is trained or rewarded to keep a result is a harder test, and so are sessions in
+which the agent makes no edit and only the end-of-session check fires; blocking could still matter in both. Settings and conventions such as confidence
+levels need an allowed list, and numbers the agent never tags need a coverage report. Our reviewer study measures
+scores on a percentile scale; reviewers that are trained or prompted to act on the errors they find may behave
+differently, and a reviewer that receives the hook's log beside the paper is a design we have not tried.

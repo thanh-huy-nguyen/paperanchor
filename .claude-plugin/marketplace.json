@@ -1,0 +1,25 @@
+{
+  "name": "plumbline",
+  "owner": {
+    "name": "The Plumbline authors"
+  },
+  "metadata": {
+    "description": "Plumbline: every number a coding agent writes into a paper recomputes from the repository's raw data."
+  },
+  "plugins": [
+    {
+      "name": "plumbline",
+      "source": "./",
+      "description": "Every number a coding agent writes into paper/*.tex must recompute from the repository's raw data: a short recipe per number, checked by hooks at each edit.",
+      "version": "0.1.0",
+      "license": "MIT",
+      "keywords": [
+        "latex",
+        "papers",
+        "research",
+        "numbers",
+        "verification"
+      ]
+    }
+  ]
+}

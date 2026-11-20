@@ -1,0 +1,12 @@
+#!/bin/sh
+# git pre-commit hook: every tagged number and every \val placeholder in a staged paper/*.tex must recompute.
+# Install: cp hooks/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+# Set EVW_HOME to the directory that contains the evw package.
+EVW_HOME=${EVW_HOME:-$(dirname "$(dirname "$(readlink -f "$0")")")}
+status=0
+for f in $(git diff --cached --name-only --diff-filter=ACM | grep -E '(^|/)paper/[^/]+\.tex$'); do
+  root=$(dirname "$(dirname "$f")")
+  PYTHONPATH="$EVW_HOME" python3 -m evw.sources - "$f" --root "$root" || status=1
+done
+[ $status -eq 0 ] || echo "evw: some numbers do not follow from their recipes; fix them or the recipes before committing." >&2
+exit $status

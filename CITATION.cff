@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use Plumbline, please cite the technical report."
+title: "Plumbline: Trust the Writing Agent, Recompute Its Numbers"
+type: software
+version: 0.1.0
+date-released: 2026-11-19
+license: MIT
+repository-code: "https://github.com/thanh-huy-nguyen/plumbline"
+authors:
+  - name: "The Plumbline authors"
+preferred-citation:
+  type: report
+  title: "Plumbline: Trust the Writing Agent, Recompute Its Numbers"
+  year: 2026
+  authors:
+    - name: "The Plumbline authors"

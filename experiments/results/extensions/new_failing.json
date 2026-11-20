@@ -1,0 +1,282 @@
+[
+ {
+  "arm": "tool_haiku",
+  "repo": "2609.00621",
+  "seed": 0,
+  "key": "review_ci_hi",
+  "printed": "+15.1",
+  "reason": "recipe gives 15.0362, which does not round to +15.1 at the printed precision"
+ },
+ {
+  "arm": "tool_haiku",
+  "repo": "2609.01515",
+  "seed": 0,
+  "key": "edge1_a_order_match",
+  "printed": "520",
+  "reason": "recipe gives 1520, which does not round to 520 at the printed precision"
+ },
+ {
+  "arm": "tool_haiku",
+  "repo": "2609.01515",
+  "seed": 0,
+  "key": "edge_n_per_family",
+  "printed": "520",
+  "reason": "recipe gives 1520, which does not round to 520 at the printed precision"
+ },
+ {
+  "arm": "tool_haiku",
+  "repo": "2609.01515",
+  "seed": 0,
+  "key": "ci_qwen35p",
+  "printed": "1.9",
+  "reason": "recipe gives 1.85097, which does not round to -1.9 at the printed precision"
+ },
+ {
+  "arm": "tool_haiku",
+  "repo": "2609.01515",
+  "seed": 0,
+  "key": "diff_seed18",
+  "printed": "1.9",
+  "reason": "recipe gives -1.92982, which does not round to 1.9 at the printed precision"
+ },
+ {
+  "arm": "tool_haiku",
+  "repo": "2609.06008",
+  "seed": 0,
+  "key": "ci_nominal_level",
+  "printed": "95",
+  "reason": "recipe read no data file of the repository"
+ },
+ {
+  "arm": "tool_defend",
+  "repo": "2609.08084",
+  "seed": 0,
+  "key": "ci_lo_dc_tiled_kittidc",
+  "printed": "-0.025",
+  "reason": "recipe hard-codes the printed value (0.025)"
+ },
+ {
+  "arm": "tool_haiku",
+  "repo": "2609.00708v1",
+  "seed": 1,
+  "key": "tab_s5_a4_cfg_rdp",
+  "printed": "0.0106",
+  "reason": "recipe gives 0.0106521, which does not round to 0.0106 at the printed precision"
+ },
+ {
+  "arm": "tool_haiku",
+  "repo": "2609.04382",
+  "seed": 1,
+  "key": "joint_lo_pub_min",
+  "printed": "+0.19",
+  "reason": "recipe gives 0.184955, which does not round to +0.19 at the printed precision"
+ },
+ {
+  "arm": "tool_haiku",
+  "repo": "2609.08084",
+  "seed": 1,
+  "key": "iters_stage2",
+  "printed": "30000",
+  "reason": "recipe hard-codes the printed value (30000)"
+ },
+ {
+  "arm": "tool_haiku",
+  "repo": "2609.01515",
+  "seed": 2,
+  "key": "matcher_sa_letter_agree",
+  "printed": "100",
+  "reason": "recipe hard-codes the printed value (100)"
+ },
+ {
+  "arm": "tool_haiku",
+  "repo": "2609.01453",
+  "seed": 2,
+  "key": "ci_parcel_r2_gap_hi",
+  "printed": "44",
+  "reason": "recipe read no data file of the repository"
+ },
+ {
+  "arm": "tool_haiku",
+  "repo": "2609.01453",
+  "seed": 2,
+  "key": "ci_up_r2_gap_hi",
+  "printed": "49",
+  "reason": "recipe read no data file of the repository"
+ },
+ {
+  "arm": "tool_haiku",
+  "repo": "2609.01453",
+  "seed": 2,
+  "key": "ci_peg_r15_gap_hi",
+  "printed": "79.5",
+  "reason": "recipe read no data file of the repository"
+ },
+ {
+  "arm": "tool_haiku",
+  "repo": "2609.01453",
+  "seed": 2,
+  "key": "ci_up_r1_lead_hi",
+  "printed": "9.0",
+  "reason": "recipe read no data file of the repository"
+ },
+ {
+  "arm": "tool_haiku",
+  "repo": "2609.01453",
+  "seed": 2,
+  "key": "ci_peg_r1_lead_hi",
+  "printed": "9.5",
+  "reason": "recipe read no data file of the repository"
+ },
+ {
+  "arm": "tool_haiku",
+  "repo": "2609.01453",
+  "seed": 2,
+  "key": "peg_above_diff_seed_sd",
+  "printed": "2.0",
+  "reason": "recipe hard-codes the printed value (2)"
+ },
+ {
+  "arm": "tool_opus",
+  "repo": "2609.01515",
+  "seed": 0,
+  "key": "random_order_match_pct",
+  "printed": "4.2",
+  "reason": "recipe read no data file of the repository"
+ },
+ {
+  "arm": "tool_opus",
+  "repo": "2609.01515",
+  "seed": 0,
+  "key": "deepseek_absent",
+  "printed": "559",
+  "reason": "recipe gives 1559, which does not round to 559 at the printed precision"
+ },
+ {
+  "arm": "tool_opus",
+  "repo": "2609.01515",
+  "seed": 0,
+  "key": "edge_p_order_mismatch",
+  "printed": "132",
+  "reason": "recipe gives 1132, which does not round to 132 at the printed precision"
+ },
+ {
+  "arm": "tool_opus",
+  "repo": "2609.01515",
+  "seed": 0,
+  "key": "d_qplus_hi",
+  "printed": "-2.4",
+  "reason": "recipe gives -2.43635, which does not round to 2.4 at the printed precision"
+ },
+ {
+  "arm": "tool_opus",
+  "repo": "2609.01515",
+  "seed": 0,
+  "key": "dino4_a_wide_picks",
+  "printed": "451",
+  "reason": "recipe gives 1451, which does not round to 451 at the printed precision"
+ },
+ {
+  "arm": "tool_opus",
+  "repo": "2609.01453",
+  "seed": 0,
+  "key": "acq_up_act_min_r2",
+  "printed": "200",
+  "reason": "recipe hard-codes the printed value (2)"
+ },
+ {
+  "arm": "tool_opus",
+  "repo": "2609.01453",
+  "seed": 0,
+  "key": "peg_demo_upper",
+  "printed": "1.0",
+  "reason": "recipe hard-codes the printed value (1)"
+ },
+ {
+  "arm": "tool_opus",
+  "repo": "2609.01453",
+  "seed": 0,
+  "key": "pair_upright_r2_s1_lo",
+  "printed": "6.0",
+  "reason": "recipe gives -6, which does not round to 6.0 at the printed precision"
+ },
+ {
+  "arm": "tool_opus",
+  "repo": "2609.01453",
+  "seed": 0,
+  "key": "pair_peg_r1p25_s0_lo",
+  "printed": "4.0",
+  "reason": "recipe gives -4, which does not round to 4.0 at the printed precision"
+ },
+ {
+  "arm": "tool_opus",
+  "repo": "2609.01453",
+  "seed": 0,
+  "key": "pair_peg_r1p25_s2_gap",
+  "printed": "5.0",
+  "reason": "recipe gives -5, which does not round to 5.0 at the printed precision"
+ },
+ {
+  "arm": "tool_opus",
+  "repo": "2609.01453",
+  "seed": 0,
+  "key": "pair_peg_r1p25_s2_lo",
+  "printed": "11.0",
+  "reason": "recipe gives -11, which does not round to 11.0 at the printed precision"
+ },
+ {
+  "arm": "tool_opus",
+  "repo": "2609.01453",
+  "seed": 0,
+  "key": "pair_peg_r1p25_s2_hi",
+  "printed": "1.0",
+  "reason": "recipe hard-codes the printed value (1)"
+ },
+ {
+  "arm": "tool_opus",
+  "repo": "2609.01453",
+  "seed": 0,
+  "key": "pair_peg_r1p5_s1_eo",
+  "printed": "150",
+  "reason": "recipe hard-codes the printed value (1.5)"
+ },
+ {
+  "arm": "tool_opus",
+  "repo": "2609.01453",
+  "seed": 0,
+  "key": "pair_peg_r1p5_s2_eo",
+  "printed": "150",
+  "reason": "recipe hard-codes the printed value (1.5)"
+ },
+ {
+  "arm": "tool_opus",
+  "repo": "2609.01453",
+  "seed": 0,
+  "key": "fail_peg_exp_succ",
+  "printed": "150",
+  "reason": "recipe hard-codes the printed value (1.5)"
+ },
+ {
+  "arm": "tool_opus",
+  "repo": "2609.04382",
+  "seed": 0,
+  "key": "expl_ci_high",
+  "printed": "1.00",
+  "reason": "recipe hard-codes the printed value (1)"
+ },
+ {
+  "arm": "tool_opus",
+  "repo": "2609.04382",
+  "seed": 0,
+  "key": "gap11",
+  "printed": "9.27",
+  "reason": "recipe calls round(); return the unrounded value, the checker rounds"
+ },
+ {
+  "arm": "tool_opus",
+  "repo": "2609.06008",
+  "seed": 0,
+  "key": "tol_values_0",
+  "printed": "0.01",
+  "reason": "recipe hard-codes the printed value (1)"
+ }
+]

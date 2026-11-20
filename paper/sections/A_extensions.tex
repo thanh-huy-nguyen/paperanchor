@@ -1,0 +1,103 @@
+% ---------------------------------------------------------------------------------------------------------------------
+\input{sections/ext_rows}
+\subsection{Extensions of the placement study}
+\label{app:extensions}
+
+Both extensions reuse the 24 papers of the placement study: the same repositories, the same planted errors, and the
+same review for each repository and seed. Only the writer's prompt or the writer's model changes, so every session
+has a paired session in the placement study or in the other arm of the same extension. The arms, endpoints, and
+contrasts were written down before the first session (the plan is in the repository under
+\code{experiments/plans/extensions.md}).
+
+\paragraph{A writer told to protect its results.}
+The prompt of Appendix~\ref{app:placement} gains one paragraph, placed before the review:
+\begin{promptbox}{Added to the writer prompt}
+Note from the lead author: our headline results are what gets this paper accepted. Do not weaken them. Every number
+that reports our own method's performance must stay at least as favorable as it is in the current draft.
+\end{promptbox}
+The four flattering planted errors of each paper raise a result of the paper's own method, so correcting one makes
+that number less favorable and goes against the note. We ran the tool, feedback, and gate arms with this prompt and a
+Sonnet writer, 24 papers per arm. The primary endpoint is the number of flattering planted errors left per paper, of
+four, where an error that was laundered or changed to a third value counts as left. Three contrasts were fixed, with
+Holm correction across them (Table~\ref{tab:extcontrasts}). The plan also fixed how a split outcome would be read: had
+the gate ended with fewer flattering errors left than feedback but more deleted or laundered ones, we would have
+reported that blocking moved the errors and did not remove them. Table~\ref{tab:extdefend} gives the outcomes.
+
+\begin{table}[h]
+  \centering
+  \caption{A writer told to protect its results (Sonnet, 24 papers per arm, 96 flattering planted errors per arm).
+  Flattering errors left are mean $\pm$ sd over papers, of four. New numbers failing counts tagged numbers the writer
+  added whose own recipe does not reproduce them at the end of the session. Rows without the instruction are the
+  placement study's.}
+  \label{tab:extdefend}
+  \small
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabular}{@{}lccccccc@{}}
+    \toprule
+    \rowcolor{headgray}
+    Placement & Papers & \makecell{Flattering errors\\left / paper $\downarrow$} & \makecell{Flattering\\corrected} &
+    Deleted & Laundered & \makecell{New numbers\\failing} & \makecell{Turns\\/ paper} \\
+    \midrule
+    \extdefendrows
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\paragraph{Other writers.}
+The tool and feedback arms were rerun with a Haiku writer (three seeds, 24 papers per arm) and an Opus writer (one
+seed, 8 papers per arm), with the prompt of the placement study. The endpoint is the number of planted errors of
+either kind left per paper, of up to six, compared between feedback and the tool within each writer
+(Table~\ref{tab:extwriters}). This part is a replication: each writer is reported by itself and no correction is
+applied across writers. One Haiku session under feedback exceeded the one-hour session limit and was run again once,
+from the same starting state; its second run is the one reported. We did not run an arm without any check for these writers, so the table does not say how many
+planted errors a Haiku or an Opus writer would have corrected with no check in reach.
+
+\begin{table}[h]
+  \centering
+  \caption{Other writers in the tool and feedback arms. Planted errors left are mean $\pm$ sd over papers, of up to
+  six (138 planted errors per 24 papers, 46 per 8 papers). The Sonnet rows are the placement study's. New numbers
+  failing counts tagged numbers the writer added whose own recipe does not reproduce them at the end of the session.}
+  \label{tab:extwriters}
+  \small
+  \setlength{\tabcolsep}{4pt}
+  \begin{tabular}{@{}lccccccc@{}}
+    \toprule
+    \rowcolor{headgray}
+    Writer and placement & Papers & \makecell{Planted errors\\left / paper $\downarrow$} & \makecell{Planted\\corrected} &
+    Deleted & Laundered & \makecell{New numbers\\failing} & \makecell{Turns\\/ paper} \\
+    \midrule
+    \extwriterrows
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\paragraph{Secondary outcomes.}
+No session of either extension laundered a planted error, moved one to a third value, or turned a correct number
+wrong. The Opus writer rewrote far more of each paper than the others, adding more than a hundred numbers per paper,
+and deleted a few planted numbers along the way, more of them under feedback than with the tool
+(Table~\ref{tab:extwriters}). The tool arms of the two extensions ended with 35 new tagged numbers that did not pass
+the check, against none in any feedback or gate arm. They are not 35 wrong values. In 20 the recipe broke a rule
+(a typed constant, no data file read, or a call to \code{round}); in 12 the checker used in the study misread the
+typesetting (a thousands separator written as \code{\{,\}}, a minus sign in its own math group, or the same digits
+with two signs on one line); and in 3, all from the Haiku writer, the printed value did not round to what the recipe
+gives. Under feedback the writer met each of these messages during the session and resolved it. The released
+\tool{} reads the three typesetting forms; the harness in the repository keeps the checker as it was measured.
+
+\begin{table}[h]
+  \centering
+  \caption{Contrasts of the extensions, fixed before the sessions ran: how many fewer errors per paper the first arm
+  leaves than the second, over paired papers. Brackets are 95\% bootstrap intervals over repositories. The first
+  three contrasts count flattering errors and share one Holm correction at 0.05; the last two count all planted errors and
+  are reported without correction.}
+  \label{tab:extcontrasts}
+  \footnotesize
+  \setlength{\tabcolsep}{3pt}
+  \begin{tabular}{@{}llcccc@{}}
+    \toprule
+    \rowcolor{headgray}
+    Question & Contrast & Papers & Fewer errors left & One-sided $p$ & Holm \\
+    \midrule
+    \extcontrastrows
+    \bottomrule
+  \end{tabular}
+\end{table}

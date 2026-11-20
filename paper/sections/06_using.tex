@@ -3,10 +3,10 @@
 \label{sec:using}
 
 \tool{} ships as a Claude Code plugin with a command-line tool inside it. This section describes what a user installs
-and what happens in a session, with the choices our measurements support.
+and what happens in a session, and which choices our measurements support.
 
 \paragraph{Setup.}
-The plugin is installed once and stays silent until a project opts in. A project opts in by having a file
+The plugin is installed once and stays inactive until a project opts in. A project opts in by having a file
 \code{paper/sources.py}, which \code{paperanchor init} creates:
 \begin{lstlisting}[language=bash]
 $ claude plugin marketplace add thanh-huy-nguyen/paperanchor
@@ -56,8 +56,8 @@ and shows the agent nothing, which is how we ran the arms without a check.
 
 \paragraph{What it costs.}
 The check makes no model call. A full recheck of a paper reruns every recipe; on the eight papers of the placement
-study, which carry between 21 and 194 tagged numbers (Appendix Table~\ref{tab:repos}), it took \checktime{}. The cost a user feels is in the writing: the
-agent spends a few lines of Python on each number, and in our study it wrote fewer new numbers when it had to justify
+study, which carry between 21 and 194 tagged numbers (Appendix Table~\ref{tab:repos}), it took \checktime{}. The main cost to a user is in the writing. The
+agent writes a few lines of Python for each number, and in our study it wrote fewer new numbers when it had to justify
 each one (Table~\ref{tab:placement}).
 
 \paragraph{Outside Claude Code.}
@@ -66,8 +66,8 @@ exits non-zero on a failure, so it can run in continuous integration, and \code{
 pre-commit hook. A co-author who edits a number by hand is held to the same recipes as the agent.
 
 \paragraph{What to watch for.}
-Three engineering failures surfaced in our early runs, and each made a broken hook look like a passing one: a hook
-that exceeded its timeout did nothing, an agent that changed directory made the hook look for the paper in the wrong
-place, and a hook that covered only the edit tools missed an agent that edited the paper through the shell. \tool{}
-now logs every decision, resolves the project root from the edited file, and covers shell commands. A check that can
-fail silently should be assumed to have done so until its log says otherwise.
+Three engineering failures appeared in our early runs, and each made a broken hook look like one that passed. A hook
+that exceeded its timeout did nothing. An agent that changed directory made the hook look for the paper in the wrong
+place. A hook that covered only the edit tools missed an agent that edited the paper through the shell. \tool{} now
+logs every decision, finds the project root from the edited file, and covers shell commands. If a check can fail
+silently, users should assume it has failed until its log shows otherwise.

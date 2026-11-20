@@ -16,15 +16,14 @@ from matplotlib.patches import Circle, FancyBboxPatch, Polygon
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 from make_figures import MIN_FS, TEXT_W, contrast, ctext, save  # noqa: E402  (also runs the shared font setup)
-from style import (ARROW, DISPLAY, DISPLAY_SCALE, ERROR_TXT, INK, LAV_EDGE, LAVENDER, LIGHT, MUTED, PURPLE,  # noqa: E402
-                   ROSE, ROSE_TXT, SKIN, arrow, number)
+from style import (ARROW, DISPLAY, DISPLAY_SCALE, ERROR_TXT, INK, LAV_EDGE, LAVENDER, LIGHT, MUTED, PARCH,  # noqa: E402
+                   PARCH_EDGE, PURPLE, ROSE, ROSE_TXT, SKIN, SLATE, TEAL, arrow, number)
 
 W, H = TEXT_W, 2.6
-ROSE_FILL, ROSE_EDGE = "#FCEFF3", "#EBB8CB"   # reviewer row (rose = wrong numbers, as in fig2)
-ROSE_ARROW = "#C7738F"
-LINE = "#D5CEDF"                              # placeholder text lines on pages and cards
-SLATE = "#5D7389"                             # the reviewer
-DARK = "#3A3247"                              # terminal title bar
+ROSE_FILL, ROSE_EDGE = PARCH, PARCH_EDGE      # reviewer row: parchment panel, oxblood title
+LINE = "#D3CBBE"                              # placeholder text lines on pages and cards
+DARK = "#2B2530"                              # terminal title bar
+CARD_BG = "#FBF9F5"                           # recipe card
 
 
 # ---------------------------------------------------------------- measuring and small helpers
@@ -106,7 +105,7 @@ def page(ax, x0, y0, w, h, z=4, ec=MUTED):
     pts = [(x0, y0), (x0 + w, y0), (x0 + w, y0 + h - f), (x0 + w - f, y0 + h), (x0, y0 + h)]
     ax.add_patch(Polygon(pts, closed=True, fc="white", ec=ec, lw=0.8, joinstyle="round", zorder=z))
     ax.add_patch(Polygon([(x0 + w - f, y0 + h), (x0 + w - f, y0 + h - f), (x0 + w, y0 + h - f)], closed=True,
-                         fc="#ECE8F0", ec=ec, lw=0.8, joinstyle="round", zorder=z + 1))
+                         fc="#E7E0D3", ec=ec, lw=0.8, joinstyle="round", zorder=z + 1))
     return x0 + 0.07, x0 + w - 0.07
 
 
@@ -127,7 +126,7 @@ def reviewer(ax, cx, cy, s=0.36, z=6):
         ax.add_patch(Circle((cx + dx * s, cy + 0.165 * s), 0.04 * s, fc="none", ec=INK, lw=0.6, zorder=z + 2))
 
 
-def check_badge(ax, cx, cy, r=0.085, fc=PURPLE, z=10):
+def check_badge(ax, cx, cy, r=0.085, fc=TEAL, z=10):
     ax.add_patch(Circle((cx, cy), r, fc=fc, ec="white", lw=1.0, zorder=z))
     ax.plot([cx - 0.42 * r, cx - 0.1 * r, cx + 0.45 * r], [cy + 0.0 * r, cy - 0.33 * r, cy + 0.38 * r], color="white",
             lw=1.4, solid_capstyle="round", solid_joinstyle="round", zorder=z + 1)
@@ -181,7 +180,7 @@ def main():
     ys = top - 1.0  # stage labels
     agent(ax, XA, cy)
     stage(ax, XA, ys, 1, "Agent edits", ROSE_TXT, bg)
-    arrow(ax, (XA + 0.32, cy), (PG0 - 0.07, cy), color=ROSE_ARROW, lw=2.4)
+    arrow(ax, (XA + 0.31, cy), (PG0 - 0.06, cy))
 
     tx0, tx1 = page(ax, PG0, cy - PH / 2, PW, PH)
     lines(ax, tx0, tx1, [cy + 0.19, cy + 0.11], frac=[1.0, 0.8])
@@ -190,9 +189,10 @@ def main():
     stage(ax, PG0 + PW / 2, ys, 2, "Wrong number", ROSE_TXT, bg)
 
     # long arrow: the reviewer reads the paper only after drafting
-    a0, a1 = PG0 + PW + 0.1, BX - 0.27
-    arrow(ax, (a0, cy), (a1, cy), color=ROSE_ARROW, lw=2.4)
-    ctext(ax, (a0 + a1) / 2, cy + 0.09, "After drafting", color=MUTED, bg=bg, ha="center", va="bottom", style="italic")
+    a0, a1 = PG0 + PW + 0.08, BX - 0.26
+    arrow(ax, (a0, cy), (a1, cy), ls=(0, (3.0, 2.2)))   # dashed: time passes before the review
+    ctext(ax, (a0 + a1) / 2, cy + 0.08, "after the draft is done", color=MUTED, bg=bg, ha="center", va="bottom",
+          style="italic")
 
     reviewer(ax, BX, cy, s=0.36)
     chh = 0.5
@@ -201,7 +201,7 @@ def main():
     runs(ax, CX0 + 0.07, cy + 0.0, [("84.8% ", ERROR_TXT), ("contradicts", INK)])
     ctext(ax, CX0 + 0.07, cy - 0.14, "Table 2", color=INK, ha="left", va="center", zorder=6)
     stage(ax, (BX - 0.18 + CX0 + CW) / 2, ys, 3, "Review flags it", ROSE_TXT, bg)
-    arrow(ax, (CX0 + CW + 0.08, cy), (XD - 0.5, cy), color=ROSE_ARROW, lw=2.4)
+    arrow(ax, (CX0 + CW + 0.06, cy), (XD - 0.46, cy))
 
     runs(ax, XD, cy + 0.06, [("31", INK), (" → ", MUTED), ("30", INK)], fs=12, bg=bg, ha="center")
     ctext(ax, XD, cy - 0.15, "score out of 100", color=MUTED, bg=bg, ha="center", va="center")
@@ -216,7 +216,7 @@ def main():
     ys = top - 1.0
     agent(ax, XA, cy)
     stage(ax, XA, ys, 1, "Agent edits", PURPLE, bg)
-    arrow(ax, (XA + 0.32, cy), (PG0 - 0.07, cy), color=ARROW, lw=2.4)
+    arrow(ax, (XA + 0.31, cy), (PG0 - 0.06, cy))
 
     # page with the tagged number, and its recipe card
     tx0, tx1 = page(ax, PG0, cy - PH / 2, PW, PH)
@@ -228,14 +228,14 @@ def main():
     rw = max(text_w(ax, s, MIN_FS) for s in code) + 0.14
     rx0, rh = PG0 + PW + 0.04, 0.5
     ry0 = cy - rh / 2
-    box(ax, rx0, ry0, rw, rh, fc="#F8F6FC", ec=PURPLE, lw=0.9, r=0.05, z=6)
+    box(ax, rx0, ry0, rw, rh, fc=CARD_BG, ec=PURPLE, lw=0.9, r=0.05, z=6)
     for i, s in enumerate(code):
-        ctext(ax, rx0 + 0.07, ry0 + rh - 0.095 - i * 0.104, s, color=INK, bg="#F8F6FC", ha="left", va="center",
+        ctext(ax, rx0 + 0.07, ry0 + rh - 0.095 - i * 0.104, s, color=INK, bg=CARD_BG, ha="left", va="center",
               zorder=7)
     stage(ax, (PG0 + rx0 + rw) / 2, ys, 2, "Number and recipe", PURPLE, bg)
 
     # the hook runs the recipe at the edit
-    arrow(ax, (rx0 + rw + 0.07, cy), (BX - 0.2, cy), color=ARROW, lw=2.4)
+    arrow(ax, (rx0 + rw + 0.06, cy), (BX - 0.19, cy))
     run_badge(ax, BX, cy)
     mh = 0.27
     box(ax, CX0, cy - 0.02, CW, mh, fc="white", ec=PURPLE, lw=0.8, r=0.05, z=4)
@@ -243,7 +243,7 @@ def main():
     runs(ax, CX0 + 0.07, cy + 0.06, [("printed ", INK), ("84.8", ERROR_TXT)])
     pill(ax, CX0 + CW / 2, cy - 0.17, "Feedback or deny", PURPLE)
     stage(ax, (BX - 0.13 + CX0 + CW) / 2, ys, 3, "Hook recomputes", PURPLE, bg)
-    arrow(ax, (CX0 + CW + 0.08, cy), (XD - 0.5, cy), color=ARROW, lw=2.4)
+    arrow(ax, (CX0 + CW + 0.06, cy), (XD - 0.55, cy))
 
     # fixed page
     fw = 0.86

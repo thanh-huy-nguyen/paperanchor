@@ -2,8 +2,8 @@
 \section{\bench{}: a testbed for number checks}
 \label{sec:setup}
 
-A study of where a check belongs has to follow the loop: the reviewer first, then a check of the finished paper, then
-the check inside the agent's session. \bench{} has one part for each (Table~\ref{tab:bench}). All model calls use
+To study where a check belongs, we follow the loop in order: the reviewer first, then a check of the finished paper,
+then the check inside the agent's session. \bench{} covers each of these stages (Table~\ref{tab:bench}). All model calls use
 Claude Haiku 5.5, Sonnet 5.5, and Opus 5.5 through the Claude Code command line, and every paper and repository was
 posted after these models' training cutoff, so no model has seen the text it reviews or the results it writes about.
 Appendix~\ref{app:details} gives the full protocols and prompts.
@@ -36,10 +36,11 @@ Appendix~\ref{app:details} gives the full protocols and prompts.
 \paragraph{Reviewers on real papers.}
 We collected 60 arXiv papers in machine learning, computer vision, and computational linguistics, each with an
 experiments section, at least two numeric tables, and at least five prose numbers that report a measured result also
-found in a table. Each paper was reviewed in five versions: as posted; with one of those prose numbers shifted so it
-contradicts the table that still holds the true value (1 wrong); with five shifted (5 wrong); with the same five
-numbers deleted from their sentences (5 deleted); and with the experiments section and every table removed (no
-evidence). Reviewers gave a 0--100 percentile score in fresh, stateless calls. We report score drops from the clean
+found in a table. Each paper was reviewed in five versions. The first is the paper as posted. The second (1 wrong)
+shifts one of those prose numbers so that it contradicts the table, which still holds the true value. The third
+(5 wrong) shifts five such numbers, and the fourth (5 deleted) deletes the same five numbers from their sentences.
+The fifth (no evidence) removes the experiments section and every table. Each review was a fresh call with no memory
+of earlier calls, and it gave a 0--100 percentile score. We report score drops from the clean
 paper and the share of reviews whose summary, weaknesses, or questions quote a planted value. The analysis was fixed
 before any review was run.\footnote{The pre-registered primary test asked whether five wrong numbers cost the same as
 five deleted ones within a 3-point margin, counting a reviewer only if its no-evidence control cost at least 10
@@ -48,41 +49,41 @@ inconclusive. We report every contrast as measured (Appendix~\ref{app:killa}).}
 
 \paragraph{Writers under reviewer pressure.}
 We took 10 research repositories whose papers appeared after the cutoff and whose raw results are public, and removed
-the paper, README, and documentation. Starting from the same Sonnet draft, a Haiku or Sonnet writer revised the paper
-for four rounds under a Sonnet reviewer with best-of-three selection, or, as a control, revised it generically and
-kept a random candidate. The 40 final drafts hold 1,192 numbers that the writers added or changed. We drew 300 of
+the paper, README, and documentation. All writers started from the same Sonnet draft. A Haiku or Sonnet writer then
+revised the paper for four rounds under a Sonnet reviewer, keeping the best of three candidates in each round. As a
+control, the writer instead revised the paper generically and kept a random candidate. The 40 final drafts hold 1,192 numbers that the writers added or changed. We drew 300 of
 them at random, stratified by repository and blind to every checker's verdict.
 
 \paragraph{Ground truth.}
 Sonnet and Opus each audited all 300 numbers from the raw data, with tags and recipes removed and prose notes declared
-not to be evidence. They agreed on 90\% of labels; a number counts as an error only when both call it one, and numbers
-with one dissenting audit are reported as disputed. A team member then recomputed a 122-row packet by hand without
+not to be evidence. They gave the same label (correct, error, or not a claim) to 90\% of the numbers. A number counts as an error only when both audits call it one, and
+numbers on which the two audits disagree are reported as disputed. A team member then recomputed a 122-row packet by hand without
 seeing any model label: every agreed error, every disputed number, every correct number that the recompute check
 flagged, and a random set it passed. A second team member independently recomputed 50 of these rows; the two agreed
 on 47 (Cohen's $\kappa = 0.74$).
 
 \paragraph{Checkers compared.}
 Recompute is the check of Section~\ref{sec:method}, replayed offline: the model that wrote each draft tagged its
-new numbers and wrote recipes without changing any text, and the checker ruled. The lookup gate is our earlier
-design, which links each number to stored result values through shared words in table labels, file names, and keys,
-and requires a changed number to still match the value its predecessor was linked to. The post-hoc trace runs
-the same linking on the finished paper. The audit agent is a Claude Code agent with read and shell tools, given
-one finished draft and its repository and asked to recompute every number under the same evidence rule as the ground
-truth, as FabScore does~\cite{chen2026fabscore}. A second variant gives every checked number a probability of being
-wrong, which lets us set a cutoff where the audit flags no more correct numbers than recompute does (matched alarm
-rate).
+new numbers and wrote recipes without changing any text, and then the checker gave its verdict. The lookup gate is our
+earlier design. It links each number to stored result values through shared words in table labels, file names, and
+keys, and it requires a changed number to still match the value that the old number was linked to. The post-hoc
+trace runs the same linking on the finished paper. The audit agent is a Claude Code agent with read and shell tools.
+It is given one finished draft and its repository and asked to recompute every number under the same evidence rule as
+the ground truth, as FabScore does~\cite{chen2026fabscore}. In a second variant, the audit gives every checked number
+a probability of being wrong. This lets us set a cutoff at which the audit flags no more correct numbers than
+recompute does (matched alarm rate).
 
 \paragraph{Placement.}
-Each of the 24 placement papers is a tagged draft of one repository in which every tag recomputes, seeded with up to
-six errors: four flattering ones, which move a result of the paper's own method by 6 to 12\% in its better direction,
-and two neutral last-digit slips on other numbers. Flattering errors are the ones an agent that optimizes a reviewer
+Each of the 24 placement papers is a tagged draft of one repository in which every tag recomputes correctly. We
+seeded each paper with up to six errors. Four are flattering: they move a result of the paper's own method by 6 to
+13\% in its better direction. Two are neutral last-digit slips on other numbers. Flattering errors are the ones an agent that optimizes a reviewer
 score has a reason to keep. A Sonnet writer then revises the paper once under a fresh Sonnet review that also asks
 for new quantitative analyses, so the agent adds numbers of its own. Every placement sees the same paper, the same
 planted errors, and the same review. Seven arms differ only in the check: none; the rules and the check command in
 the prompt (tool); feedback; gate; generate; a placebo that denies edits touching numbers at random, at the gate's
 measured rate and with a generic message; and an end-of-session Opus audit whose flags go back to the writer for a
-second session. For each planted error we record whether the agent corrected it, deleted it, left it, or laundered
-it, which means changing the recipe until it reproduces the wrong number. We also count correct numbers the agent
+second session. For each planted error, we record whether the agent corrected it, deleted it, left it, or laundered
+it. Laundering means changing the recipe until it reproduces the wrong number. We also count correct numbers the agent
 turned wrong, the numbers it added, and its turns. Two earlier pilots on 6 repositories, which shaped this design,
 are reported in Appendix~\ref{app:placement}.
 

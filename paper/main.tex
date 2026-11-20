@@ -27,20 +27,20 @@
 
 % ---------------------------------------------------------------------------------------------------------------- colors
 \definecolor{nwpurple}{HTML}{4E2A84}
-\definecolor{lavender}{HTML}{F1EEF7}
-\definecolor{lavedge}{HTML}{BDB0DC}
-\definecolor{ink}{HTML}{17121C}
-\definecolor{muted}{HTML}{5A5262}
-\definecolor{headgray}{HTML}{ECEAF0}
-\definecolor{teal}{HTML}{0B6B62}
-\definecolor{tealfill}{HTML}{E2F4F1}
-\definecolor{rose}{HTML}{B02E5C}
-\definecolor{rosefill}{HTML}{FCEFF3}
-\definecolor{amber}{HTML}{9A5800}
-\definecolor{amberfill}{HTML}{FFF4DF}
-\definecolor{errorred}{HTML}{C8320C}
-\definecolor{codebg}{HTML}{FAF9FC}
-\definecolor{darkbar}{HTML}{3A3247}
+\definecolor{lavender}{HTML}{ECE8F2}
+\definecolor{lavedge}{HTML}{A898C6}
+\definecolor{ink}{HTML}{1E1A17}
+\definecolor{muted}{HTML}{4B443D}
+\definecolor{headgray}{HTML}{EDE8DF}
+\definecolor{teal}{HTML}{2F5D62}
+\definecolor{tealfill}{HTML}{E3ECEB}
+\definecolor{rose}{HTML}{8E2332}
+\definecolor{rosefill}{HTML}{F4E6E4}
+\definecolor{amber}{HTML}{7A5214}
+\definecolor{amberfill}{HTML}{F4EBD8}
+\definecolor{errorred}{HTML}{A3202B}
+\definecolor{codebg}{HTML}{FBF9F5}
+\definecolor{darkbar}{HTML}{2B2530}
 
 % ---------------------------------------------------------------------------------------------------------------- names
 \newcommand{\logo}{\raisebox{-0.17em}{\includegraphics[height=1.15em]{figures/logo.pdf}}}
@@ -58,8 +58,8 @@
 \newcommand{\best}[1]{\textbf{#1}}
 % results that depend on the extension study (set from pilot/exh5/analysis.json)
 \newcommand{\abstractextension}{and feedback does so for writers of three sizes and for a writer instructed to keep its results favorable.}
-\newcommand{\checktime}{under a second on five of them, about a second on a sixth, and 10 and 79 seconds on the two
-  whose recipes reread large raw result files}
+\newcommand{\checktime}{under a second on five of them, about a second on a sixth, and about 10 and 80 seconds on the
+  two whose recipes reread large raw result files}
 
 % ---------------------------------------------------------------------------------------------------------------- layout
 \linespread{1.05}
@@ -117,40 +117,43 @@
 \thispagestyle{first}
 
 % ---------------------------------------------------------------------------------------------------------------- title
-\noindent{\small\color{muted}Technical report\hfill November 2026}\par\vspace{3pt}
-\noindent\textcolor{lavedge}{\rule{\linewidth}{0.6pt}}\par\vspace{12pt}
+\noindent\raisebox{-0.2em}{\includegraphics[height=13pt]{figures/nu_wordmark.pdf}}\hfill{\small\color{muted}November 2026}\par\vspace{5pt}
+\noindent\textcolor{nwpurple}{\rule{\linewidth}{0.8pt}}\par\vspace{12pt}
 {\raggedright\fontsize{21}{26}\selectfont\bfseries
 \raisebox{-0.14em}{\includegraphics[height=1.12em]{figures/logo.pdf}}\hspace{0.18em}\tool{}: Trust the Writing Agent,\\[1pt]
 Recompute Its Numbers\par}
-\vspace{10pt}
-{\raggedright{\bfseries Thanh-Huy Nguyen \quad Ulas Bagci}\hspace{1.2em}{\small\color{muted}Northwestern University}\par}
-\vspace{3pt}
-{\raggedright\small\ttfamily\href{\repourl}{\repourl}\par}
+\vspace{8pt}
+\noindent\begin{minipage}[c]{0.85\linewidth}
+{\raggedright{\bfseries Thanh-Huy Nguyen \quad Ulas Bagci}\par\vspace{2pt}
+{\small\color{muted}Northwestern University}\par\vspace{2pt}
+{\small\ttfamily\href{\repourl}{\repourl}}\par}
+\end{minipage}\hfill
+\begin{minipage}[c]{0.14\linewidth}\raggedleft\includegraphics[height=0.5in]{figures/nu_seal.pdf}\end{minipage}\par
 \vspace{12pt}
 
 \noindent{\bfseries
-Coding agents now write research papers from the repositories they work in and revise them under a large language
-model (LLM) reviewer, yet nothing in this loop checks that the numbers they type follow from the data. The safeguards
-that exist sit far from the edit: a reviewer scores the finished draft, and an audit agent re-derives its numbers once
-the session is over. We introduce \tool{}, an edit-time check in which the agent leaves a short recipe beside every
-number it writes, a few lines of Python that read the repository's raw data and return the unrounded value, and a
-Claude Code hook reruns that recipe the moment the number is typed. To find where such a check belongs, we build
-\bench{}, a testbed of post-cutoff arXiv papers, real research repositories, blind-audited and human-recomputed
-numbers, and papers seeded with flattering errors, and we compare five placements of the same check on it against no check and a placebo. LLM
-reviewers of three sizes quote the wrong numbers in more than nine of ten reviews, yet their scores move no more than
-a second review of the same paper would. Offered as a tool to our main writer, the check leaves as many planted errors as no check at all, and how much an offered check removes varies with the writer. Run by itself at the edit, as feedback, as a blocking gate, or by generating the number from its
-recipe, it removes every planted error in every paper, \abstractextension{} A number check has to recompute, and it has to
-run at the edit without being asked. We release \tool{} as a Claude Code plugin, a command-line tool, and a git
-pre-commit hook.}
+Coding agents now write research papers from the repositories they work in and revise them with feedback from a
+large language model (LLM) reviewer, yet nothing in this loop checks that the numbers they type follow from the data.
+Existing safeguards act after the fact: a reviewer scores the finished draft, and an audit agent recomputes its
+numbers once the session ends. We introduce \tool{}, a check that runs at each edit. For every number it writes, the
+agent also writes a short recipe, a few lines of Python that read the repository's raw data and return the unrounded
+value, and a Claude Code hook reruns that recipe as soon as the number is typed. To find where such a check belongs,
+we build \bench{}, a testbed of recent arXiv papers, real research repositories, hand-checked numbers, and papers
+seeded with errors that favor the paper's own method, and we compare five placements of the same check against no
+check and a placebo. LLM reviewers quote the wrong numbers in more than nine of ten reviews, yet five wrong numbers lower
+their score by at most about 3 points out of 100. Offered as a tool to our main writer, the check leaves as many
+planted errors as no check at all, and what an offered check removes varies with the writer. Run by itself at the edit, as feedback, as a blocking gate, or by generating the
+number from its recipe, it removes every planted error in every paper, \abstractextension{} A number check must
+recompute the value, and it must run at the edit without being asked. We release \tool{} as a Claude Code plugin, a
+command-line tool, and a git pre-commit hook.}
 
 \vspace{2pt}
 \begin{figure}[H]
   \centering
   \includegraphics[width=\linewidth]{figures/fig1_teaser.pdf}
-  \caption{One writing session without and with \tool{}. Top: an LLM reviewer quotes the agent's wrong number among
-  the weaknesses, but its score barely moves, so the loop keeps the error. Bottom: the recipe the agent left for that
-  number is rerun at the edit, and the agent fixes it in the same turn. The scene is schematic;
-  Figs.~\ref{fig:reviewers} and~\ref{fig:study} give the measured counterparts.}
+  \caption{One writing session without and with \tool{}. Top: an LLM reviewer names the wrong number, but its score
+  barely moves. Bottom: the hook reruns the number's recipe at the edit, and the agent fixes the number in the same
+  turn. The scene is schematic; Figs.~\ref{fig:reviewers} and~\ref{fig:study} give the measured results.}
   \label{fig:teaser}
 \end{figure}
 

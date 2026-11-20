@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PaperAnchor: Trust the Writing Agent, Recompute Its Numbers</title>
+<meta name="description" content="PaperAnchor reruns a recipe for every number an AI coding agent types into a paper, at the moment it is typed. A Claude Code plugin, a command-line tool, and a git hook.">
+<meta property="og:title" content="PaperAnchor: Trust the Writing Agent, Recompute Its Numbers">
+<meta property="og:description" content="Every planted error removed in 24 of 24 papers when the check runs at the edit. Zero model calls, no dependencies.">
+<meta property="og:image" content="https://thanh-huy-nguyen.github.io/paperanchor/assets/social_preview.png">
+<meta property="og:url" content="https://thanh-huy-nguyen.github.io/paperanchor/">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://thanh-huy-nguyen.github.io/paperanchor/assets/social_preview.png">
+<link rel="icon" type="image/png" href="assets/logo_tile.png">
+<style>
+@font-face{font-family:"Source Serif";src:url(fonts/SourceSerif4-Regular.ttf) format("truetype");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"Source Serif";src:url(fonts/SourceSerif4-Italic.ttf) format("truetype");font-weight:400;font-style:italic;font-display:swap}
+@font-face{font-family:"Source Serif";src:url(fonts/SourceSerif4-SemiBold.ttf) format("truetype");font-weight:600;font-style:normal;font-display:swap}
+@font-face{font-family:"Cormorant";src:url(fonts/CormorantGaramond-SemiBold.ttf) format("truetype");font-weight:600;font-display:swap}
+@font-face{font-family:"DejaVu Mono";src:url(fonts/DejaVuSansMono.ttf) format("truetype");font-display:swap}
+:root{
+  --night:#17121F;--night2:#211A2D;--rule:#3A3048;--parch:#F4EDE0;--parch2:#EAE1CF;--edge:#C9B994;
+  --brass:#D2AE62;--brass-dk:#9A7A36;--ox:#8E2332;--ox-lt:#F0A3A9;--purple:#4E2A84;--lilac:#C3B6DD;--mist:#A79FB4;
+  --ink:#1E1A17;--muted:#4B443D;--teal:#2F5D62;--navy:#2D4B73;--green:#7FC8A0;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--parch);color:var(--ink);font-family:"Source Serif",Georgia,serif;font-size:18px;line-height:1.6}
+a{color:var(--purple)}
+code,pre{font-family:"DejaVu Mono",ui-monospace,Menlo,monospace}
+img{max-width:100%;height:auto;display:block}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+
+/* nav */
+nav{position:sticky;top:0;z-index:10;background:rgba(23,18,31,.94);backdrop-filter:blur(6px);border-bottom:1px solid var(--rule)}
+nav .wrap{display:flex;align-items:center;gap:22px;height:58px}
+nav .brand{display:flex;align-items:center;gap:10px;color:var(--parch);text-decoration:none;font-family:"Cormorant",serif;font-size:26px;font-weight:600}
+nav .brand img{width:32px;height:32px}
+nav .links{margin-left:auto;display:flex;gap:20px;align-items:center}
+nav .links a{color:var(--lilac);text-decoration:none;font-size:16px}
+nav .links a:hover{color:var(--brass)}
+nav .gh{border:1px solid var(--brass-dk);border-radius:999px;padding:4px 14px;color:var(--brass)!important;white-space:nowrap}
+@media (max-width:760px){nav .links a:not(.gh){display:none}}
+
+/* hero */
+.hero{background:var(--night);color:var(--parch);
+  background-image:repeating-linear-gradient(to bottom,transparent 0,transparent 47px,var(--night2) 47px,var(--night2) 48px);
+  padding:72px 0 64px;border-bottom:3px solid var(--brass-dk)}
+.hero .grid{display:grid;grid-template-columns:1.05fr 1fr;gap:48px;align-items:center}
+@media (max-width:900px){.hero .grid{grid-template-columns:1fr}}
+.kicker{font-size:15px;letter-spacing:.14em;text-transform:uppercase;color:var(--brass)}
+h1{font-family:"Cormorant",serif;font-weight:600;font-size:clamp(48px,7vw,84px);line-height:1;margin:12px 0 18px;color:var(--parch)}
+.tagline{font-style:italic;color:var(--brass);font-size:clamp(21px,2.4vw,27px);line-height:1.35;margin:0 0 18px}
+.lede{color:var(--lilac);margin:0 0 26px}
+.authors{color:var(--mist);font-size:16px;margin:0 0 26px}
+.authors b{color:var(--parch);font-weight:600}
+.btns{display:flex;flex-wrap:wrap;gap:12px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:10px;text-decoration:none;font-weight:600;font-size:16px;border:1px solid var(--brass-dk)}
+.btn.primary{background:var(--brass);color:var(--night);border-color:var(--brass)}
+.btn.ghost{color:var(--parch)}
+.btn:hover{transform:translateY(-1px)}
+.term{border-radius:14px;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.45);border:1px solid var(--rule)}
+
+/* sections */
+section{padding:72px 0}
+section.alt{background:var(--parch2)}
+section.dark{background:var(--night);color:var(--parch)}
+h2{font-family:"Cormorant",serif;font-weight:600;font-size:clamp(34px,4vw,46px);line-height:1.1;margin:0 0 14px}
+.sub{color:var(--muted);max-width:760px;margin:0 0 34px}
+section.dark .sub{color:var(--lilac)}
+.figure{background:#fff;border:1px solid var(--edge);border-radius:14px;padding:18px;margin:26px 0 8px}
+.cap{font-size:15px;color:var(--muted);margin:10px 4px 0}
+
+/* stat cards */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media (max-width:820px){.stats{grid-template-columns:1fr}}
+.stat{background:var(--night2);border:1px solid var(--rule);border-radius:14px;padding:26px}
+.stat .num{font-family:"Cormorant",serif;font-weight:600;font-size:56px;line-height:1;color:var(--brass)}
+.stat .what{color:var(--parch);font-weight:600;margin:10px 0 6px}
+.stat p{color:var(--lilac);font-size:16px;margin:0}
+
+/* code */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media (max-width:820px){.cols{grid-template-columns:1fr}}
+.code{position:relative;background:var(--night);color:var(--parch);border-radius:12px;padding:36px 20px 18px;font-size:14.5px;line-height:1.55;overflow-x:auto;border:1px solid var(--rule)}
+.code .label{position:absolute;top:10px;left:20px;font-size:12px;color:var(--mist);font-family:"Source Serif",serif;letter-spacing:.08em;text-transform:uppercase}
+.code pre{margin:0;white-space:pre}
+.k{color:#B9A3E3}.s{color:#9FD3B0}.c{color:var(--mist);font-style:italic}.bad{color:var(--ox-lt)}.ok{color:var(--green)}.b{color:var(--brass)}
+.copy{position:absolute;top:8px;right:10px;background:var(--night2);color:var(--brass);border:1px solid var(--brass-dk);border-radius:8px;padding:3px 10px;font-size:13px;cursor:pointer;font-family:"Source Serif",serif}
+.rules{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:28px}
+@media (max-width:820px){.rules{grid-template-columns:1fr}}
+.rule{background:#fff;border:1px solid var(--edge);border-left:4px solid var(--purple);border-radius:10px;padding:16px 18px}
+.rule b{display:block;margin-bottom:4px}
+.rule span{font-size:16px;color:var(--muted)}
+
+/* table */
+table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--edge);border-radius:12px;overflow:hidden;font-size:16.5px}
+th,td{padding:11px 16px;text-align:left;border-bottom:1px solid #E6DCC8}
+th{background:#EDE3CF;font-weight:600}
+td.n{text-align:center;font-variant-numeric:tabular-nums}
+tr.ours td{background:#ECE8F2}
+tr.ours td:first-child{font-weight:600;color:var(--purple)}
+.tablewrap{overflow-x:auto}
+
+/* findings */
+.find{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:30px}
+@media (max-width:820px){.find{grid-template-columns:1fr}}
+.find div{background:#fff;border:1px solid var(--edge);border-radius:12px;padding:18px 20px}
+.find h3{font-family:"Cormorant",serif;font-size:27px;margin:0 0 6px;color:var(--ox)}
+.find p{margin:0;font-size:16.5px;color:var(--muted)}
+
+.bib{position:relative}
+footer{background:var(--parch2);border-top:1px solid var(--edge);padding:36px 0;color:var(--muted);font-size:15px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:18px;align-items:center;justify-content:space-between}
+footer img{height:22px;width:auto}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="#top"><img src="assets/logo_tile.png" alt="">PaperAnchor</a>
+    <div class="links">
+      <a href="#how">How it works</a>
+      <a href="#results">Results</a>
+      <a href="#install">Install</a>
+      <a href="https://github.com/thanh-huy-nguyen/paperanchor/blob/main/paper/paperanchor.pdf">Paper</a>
+      <a class="gh" href="https://github.com/thanh-huy-nguyen/paperanchor">Star on GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap grid">
+    <div>
+      <div class="kicker">Claude Code plugin · CLI · git hook</div>
+      <h1>PaperAnchor</h1>
+      <p class="tagline">Trust the writing agent.<br>Recompute its numbers.</p>
+      <p class="lede">Your coding agent just wrote the results section. PaperAnchor reruns a short recipe for every
+        number it types, at the moment it is typed, and hands back the value the data gives.</p>
+      <p class="authors"><b>Thanh-Huy Nguyen</b> &nbsp;·&nbsp; <b>Ulas Bagci</b> &nbsp;·&nbsp; Northwestern University</p>
+      <div class="btns">
+        <a class="btn primary" href="#install">Install in 30 seconds</a>
+        <a class="btn ghost" href="https://github.com/thanh-huy-nguyen/paperanchor/blob/main/paper/paperanchor.pdf">Read the paper</a>
+        <a class="btn ghost" href="https://github.com/thanh-huy-nguyen/paperanchor">Code</a>
+      </div>
+    </div>
+    <div class="term"><img src="assets/demo.gif" alt="A writing agent types 84.8%, PaperAnchor reports that the recipe gives 81.84, and the agent restores 81.8%"></div>
+  </div>
+</header>
+
+<section class="dark">
+  <div class="wrap">
+    <h2>A reviewer reads the number. A recipe recomputes it.</h2>
+    <p class="sub">We measured where a number check belongs in a writing agent's loop, on 60 recent arXiv papers, 10
+      real research repositories, 300 hand-checked numbers, and 24 papers seeded with errors that flatter the paper's
+      own method.</p>
+    <div class="stats">
+      <div class="stat"><div class="num">24 / 24</div><div class="what">papers with every planted error removed</div>
+        <p>when the check runs by itself at the edit. Offered as a command the agent may call, it left as many errors as no check at all.</p></div>
+      <div class="stat"><div class="num">9 in 10</div><div class="what">reviews quote the wrong number</div>
+        <p>yet five wrong numbers lower an LLM reviewer's score by at most about 3 points out of 100.</p></div>
+      <div class="stat"><div class="num">0</div><div class="what">model calls, no dependencies</div>
+        <p>The check is deterministic plain Python. On most papers a full recheck takes under a second.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <h2>How it works</h2>
+    <p class="sub">Every number carries a tag, every tag names a recipe, and a Claude Code hook reruns the recipe each
+      time the paper changes. A number that does not follow comes back to the agent in the same turn.</p>
+    <div class="cols">
+      <div class="code"><span class="label">paper/main.tex</span><pre>Our model reaches <span class="b">81.8</span>\%<span class="k">\src{acc}</span>
+test accuracy.</pre></div>
+      <div class="code"><span class="label">paper/sources.py</span><pre><span class="k">@source</span>(<span class="s">"acc"</span>, means=<span class="s">"test accuracy (%)"</span>)
+<span class="k">def</span> acc():
+    d = load(<span class="s">"results/metrics.json"</span>)[<span class="s">"ours"</span>]
+    <span class="k">return</span> 100 * d[<span class="s">"correct"</span>] / d[<span class="s">"total"</span>]</pre></div>
+    </div>
+    <div class="code" style="margin-top:20px"><span class="label">the agent changes 81.8 to 84.8 and reads</span><pre><span class="b">Feedback only, your edit was kept.</span> 1 number(s) could not be recomputed from the repository's data:
+<span class="bad">- 84.8 (line 8, key acc): recipe gives 81.84, which does not round to 84.8 at the printed precision.</span></pre></div>
+    <div class="rules">
+      <div class="rule"><b>1. The value follows.</b><span>The recipe's value rounds to the printed value at the printed precision.</span></div>
+      <div class="rule"><b>2. The recipe reads raw data.</b><span>Repository files that existed unchanged when the session began, never prose notes.</span></div>
+      <div class="rule"><b>3. No typed constant.</b><span>The recipe neither contains the printed value nor rounds by itself.</span></div>
+    </div>
+    <div class="figure"><img src="assets/overview.png" alt="One edit checked by PaperAnchor, and the six places a number check can sit"></div>
+    <p class="cap">One edit checked by PaperAnchor (top), and the six places a number check can sit, with the planted
+      errors each left per paper (bottom).</p>
+  </div>
+</section>
+
+<section class="alt" id="results">
+  <div class="wrap">
+    <h2>Where the check sits decides whether it works</h2>
+    <p class="sub">The same recompute check, placed seven ways, on 24 papers with up to six planted errors each.</p>
+    <div class="tablewrap">
+    <table>
+      <tr><th>Where the check sits</th><th style="text-align:center">Planted errors left per paper</th><th style="text-align:center">Agent turns per paper</th></tr>
+      <tr><td>No check</td><td class="n">3.08</td><td class="n">7.1</td></tr>
+      <tr><td>Check command and rules in the prompt</td><td class="n">2.96</td><td class="n">6.6</td></tr>
+      <tr><td>Placebo: random refusals at the gate's rate</td><td class="n">2.71</td><td class="n">16.5</td></tr>
+      <tr><td>Opus audit at the end of the session</td><td class="n">0.12</td><td class="n">14.0</td></tr>
+      <tr class="ours"><td>PaperAnchor, feedback after each edit (default)</td><td class="n"><b>0.00</b></td><td class="n">8.7</td></tr>
+      <tr class="ours"><td>PaperAnchor, blocking gate</td><td class="n"><b>0.00</b></td><td class="n">19.9</td></tr>
+      <tr class="ours"><td>PaperAnchor, generate mode</td><td class="n"><b>0.00</b></td><td class="n">7.8</td></tr>
+    </table>
+    </div>
+    <div class="figure"><img src="assets/study.png" alt="Planted errors left in each of 24 papers under seven placements of the check"></div>
+    <p class="cap">Each cell is one paper. Only the placements that run at the edit without being asked clear every paper.</p>
+    <div class="find">
+      <div><h3>A reviewer is not a number check</h3><p>LLM reviewers quoted the planted wrong numbers in more than nine of ten reviews, and barely changed their scores.</p></div>
+      <div><h3>A check has to recompute</h3><p>Agents write fresh analyses, so matching against stored values misses errors. Rerunning the writer's recipe caught 14 of 16 human-found errors.</p></div>
+      <div><h3>It has to run without being asked</h3><p>Offered as a command to our main writer, the check left as many errors as no check. Run by a hook at the edit, it left none.</p></div>
+      <div><h3>It holds under pressure</h3><p>Told to keep its headline results, the writer still fixed all 96 flattering errors. Haiku, Sonnet and Opus writers all ended at zero with feedback.</p></div>
+    </div>
+    <div class="figure"><img src="assets/extensions.png" alt="Outcomes of planted errors for a writer told to protect its results, and for Haiku, Sonnet and Opus writers"></div>
+  </div>
+</section>
+
+<section class="dark" id="install">
+  <div class="wrap">
+    <h2>Install in 30 seconds</h2>
+    <p class="sub">Install the plugin once. It stays silent until a project opts in with <code>paperanchor init</code>.</p>
+    <div class="code"><span class="label">terminal</span><pre id="i1">claude plugin marketplace add thanh-huy-nguyen/paperanchor
+claude plugin install paperanchor@paperanchor
+cd my-project &amp;&amp; paperanchor init</pre><button class="copy" data-t="i1">Copy</button></div>
+    <div class="cols" style="margin-top:20px">
+      <div class="code"><span class="label">paper preamble</span><pre id="i2">\providecommand{\src}[1]{}
+\providecommand{\val}[2][1]{}</pre><button class="copy" data-t="i2">Copy</button></div>
+      <div class="code"><span class="label">without Claude Code</span><pre id="i3">pip install git+https://github.com/thanh-huy-nguyen/paperanchor
+paperanchor check      <span class="c"># CI: exit 1 on a failure</span>
+paperanchor git-hook   <span class="c"># pre-commit hook</span></pre><button class="copy" data-t="i3">Copy</button></div>
+    </div>
+  </div>
+</section>
+
+<section id="cite">
+  <div class="wrap">
+    <h2>Citation</h2>
+    <div class="code bib"><pre id="bib">@techreport{nguyen2026paperanchor,
+  title       = {PaperAnchor: Trust the Writing Agent, Recompute Its Numbers},
+  author      = {Nguyen, Thanh-Huy and Bagci, Ulas},
+  institution = {Northwestern University},
+  year        = {2026},
+  url         = {https://github.com/thanh-huy-nguyen/paperanchor}
+}</pre><button class="copy" data-t="bib">Copy</button></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <img src="assets/northwestern.svg" alt="Northwestern University">
+    <span>PaperAnchor is MIT licensed. Fonts: Source Serif 4 and Cormorant Garamond (SIL OFL), DejaVu Sans Mono.</span>
+    <a href="https://github.com/thanh-huy-nguyen/paperanchor">github.com/thanh-huy-nguyen/paperanchor</a>
+  </div>
+</footer>
+
+<script>
+document.querySelectorAll(".copy").forEach(function (b) {
+  b.addEventListener("click", function () {
+    var t = document.getElementById(b.dataset.t).innerText;
+    try { navigator.clipboard.writeText(t); b.textContent = "Copied"; } catch (e) { b.textContent = "Select and copy"; }
+    setTimeout(function () { b.textContent = "Copy"; }, 1600);
+  });
+});
+</script>
+</body>
+</html>

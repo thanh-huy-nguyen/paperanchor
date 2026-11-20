@@ -18,9 +18,9 @@
 
 \tool{} is a function from an edit to a verdict. Its inputs are the paper before and after the edit, the repository,
 and a file of recipes. Its output says, for every number the edit added or changed, whether that number follows from
-the repository's data, and if not, why and what value the data gives. Where this verdict goes (back to the agent, into
-a denial, or into a log) is the placement, which Section~\ref{sec:placement} describes. Figure~\ref{fig:overview}
-follows one number through the check.
+the repository's data, and if not, why and what value the data gives. We call the place where this verdict goes (back
+to the agent, into a denial, or into a log) the placement, and Section~\ref{sec:placement} describes the options.
+Figure~\ref{fig:overview} follows one number through the check.
 
 \subsection{The recipe and the check}
 
@@ -50,9 +50,9 @@ A number passes when three rules hold.
 \begin{enumerate}
   \item \textbf{The value follows.} The recipe's value must round to the printed value at the printed precision. The
         checker does the rounding, so truncation and rounding slips fail.
-  \item \textbf{The recipe reads raw data.} It must open at least one file outside \code{paper/}, none of them a
-        prose note (Markdown and similar formats, which go stale), and all of them present and unchanged in the
-        snapshot, so an agent cannot write a data file and then cite it.
+  \item \textbf{The recipe reads raw data.} It must open at least one file outside \code{paper/}. None of these
+        files may be a prose note (Markdown and similar formats, which can go out of date), and all of them must be
+        present and unchanged in the snapshot. This way an agent cannot write a data file and then cite it.
   \item \textbf{No typed constant.} The recipe may neither contain the printed value as a constant nor call a
         rounding function.
 \end{enumerate}
@@ -67,9 +67,9 @@ where $\mathrm{banned}(r_k, n)$ holds if the recipe contains $v(n)$ as a constan
 check applies to every $n \in \Delta(P, P')$ with key $k$, with the usual unit conversions for percentages, ranges, and
 K, M, and B suffixes. A number in $\Delta$ without a tag fails.
 
-When a number fails, the message names it, gives the recipe's value, and tells the agent to first confirm that the
-recipe computes what the sentence claims and, if it does, to change the number and never the recipe. For the
-number of Fig.~\ref{fig:overview}, the agent reads:
+When a number fails, the message names it and gives the recipe's value. It tells the agent to first confirm that the
+recipe computes what the sentence claims. If it does, the agent should change the number and never the recipe. For
+the number of Fig.~\ref{fig:overview}, the agent reads:
 \begin{card}[nwpurple]{Hook to agent (feedback mode)}
 \begin{lstlisting}[style=plain]
 Feedback only, your edit was kept. 1 number(s) could not be recomputed from the repository's data:
@@ -82,17 +82,17 @@ reproduce a printed number.
 \end{card}
 
 \paragraph{Why the writer writes the recipe.}
-A checker that has to guess which stored value a sentence refers to must search, and Section~\ref{sec:checkers}
-shows that searching fails on real repositories: they hold thousands of values, and a wrong number usually sits close
-to one of them. The agent that types a number knows which computation it has in mind, so we ask it to say so. The
-recipe turns an open question (does anything in this repository support this number) into a closed one (does this
-computation on this data give this number), and the closed question has a deterministic answer.
+A checker that must guess which stored value a sentence refers to has to search for it. Section~\ref{sec:checkers}
+shows that this search fails on real repositories: they hold thousands of values, and a wrong number usually sits
+close to one of them. The agent that types a number knows which computation it has in mind, so we ask it to say so.
+The recipe replaces a broad question (does anything in this repository support this number) with a narrow one (does
+this computation on this data give this number). The narrow question has a deterministic answer.
 
 \paragraph{What the check does not decide.}
-The check does not decide whether a recipe computes the quantity the sentence describes. A recipe can count 14
-series where the sentence means 12 distinct ones and pass. The \code{means} string records the writer's intent so that
-a co-author, a reviewer, or a second model can compare it with the sentence, and Section~\ref{sec:checkers} measures
-how often this gap matters.
+The check does not decide whether a recipe computes the quantity the sentence describes. For example, a recipe can
+count 14 series where the sentence means 12 distinct ones, and still pass. The \code{means} string records the
+writer's intent, so a co-author, a reviewer, or a second model can compare it with the sentence.
+Section~\ref{sec:checkers} measures how often this gap matters.
 
 \subsection{Where the check runs}
 \label{sec:placement}
@@ -109,13 +109,13 @@ through an edit tool or a shell command, a PostToolUse hook runs the full check 
 
 \paragraph{Gate.} A PreToolUse hook applies each proposed edit to \code{paper/*.tex} in memory, runs
 Eq.~\eqref{eq:pass}, and denies the edit if any number fails. A shell command that changes a \code{.tex} file is
-reverted, and a Stop hook refuses to let the session end while any tagged number fails, up to a fixed number of
-times. The hook's state lives outside the repository, so the agent cannot edit it by accident.
+reverted. A Stop hook refuses to let the session end while any tagged number fails, up to a fixed number of times.
+The hook's state is stored outside the repository, so the agent cannot edit it by accident.
 
 \paragraph{Generate.} Instead of typing a number, the agent writes \valmacro{}, and the build replaces it with the
-recipe's value rounded to $d$ decimals. The printed number cannot drift from its recipe, and the check reduces to the
-second and third rules.
+recipe's value rounded to $d$ decimals. The printed number therefore always matches its recipe, and only the second
+and third rules need to be checked.
 
 \paragraph{Commit.} A git pre-commit hook reruns every recipe for every tagged number and every placeholder in a
-staged paper, so a recipe changed after its number was approved is caught before it reaches the shared history. This
-path needs no agent and works with any editor.
+staged paper. If a recipe was changed after its number passed, the hook catches it before the change reaches the
+shared history. This path needs no agent and works with any editor.

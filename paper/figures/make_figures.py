@@ -28,20 +28,22 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 PROJ = os.path.abspath(os.path.join(HERE, "..", ".."))  # evidence_writing/
 # shared palette, fonts and drawing helpers (style.py; Source Serif 4 + Cormorant Garamond)
 sys.path.insert(0, HERE)
-from style import (AMBER, AMBER_TXT, BLUE, BLUE_TXT, BROWN, DISPLAY, DISPLAY_SCALE, GREEN, INK, LIGHT, MUTED,  # noqa: E402
-                   PURPLE, ROSE, ROSE_TXT, TEAL, setup)
+from style import (AMBER, AMBER_TXT, BLUE, BLUE_TXT, BROWN, DISPLAY, DISPLAY_SCALE, GOLD, GREEN, INK, LIGHT,  # noqa: E402
+                   MUTED, PURPLE, PURPLE_DK, PURPLE_MID, ROSE, ROSE_TXT, SLATE, TEAL, setup)
 
 setup()
 TEXT_W = 6.5
-GRAY_NOCHECK = "#9A9A9A"     # gray is reserved for "no check"
-GRAY_TXT = "#5F5F5F"
-ROSE_LIGHT = "#EDA9C2"       # 1 wrong number (light companion of rose = 5 wrong numbers)
-BLUE_LIGHT = "#BCD0EE"       # Opus audit at the strict cutoff (light companion of blue)
-FEEDBACK = "#9C8BCB"         # mid purple: PaperAnchor feedback mode
-FEEDBACK_TXT = "#5B4A8F"
-DELETED = "#EADCC9"          # deleted numbers (pale clay, not a method color)
-OTHER = "white"
-LEFT = ROSE_TXT              # wrong number left in the paper (deep rose, so its count reads in white)
+GRAY_NOCHECK = "#6E6A64"     # warm gray is reserved for "no check"
+GRAY_TXT = "#55514B"
+ROSE_LIGHT = "#C4868D"       # 1 wrong number (light companion of oxblood = 5 wrong numbers)
+BLUE_LIGHT = "#A9B6C9"       # Opus audit at the strict cutoff (light companion of navy)
+FEEDBACK = PURPLE_MID        # mid purple: PaperAnchor feedback mode
+FEEDBACK_TXT = PURPLE_MID
+GENERATE = PURPLE_DK         # darkest purple: PaperAnchor generate mode
+DELETED = "#CDBFA0"          # deleted numbers (tan, not a method color)
+CORRECTED = TEAL             # planted error corrected (deep teal, the same in every outcome chart)
+OTHER = GOLD                 # planted number changed to a third value
+LEFT = ROSE                  # wrong number left in the paper (oxblood)
 MIN_FS = 6.5
 
 
@@ -101,7 +103,7 @@ def style_axis(ax):
 # ---------------------------------------------------------------- fig2: reviewers see the wrong number, score barely moves
 REVIEWERS = [("haiku", "Haiku"), ("sonnet", "Sonnet"), ("opus", "Opus")]
 CONDS = [("clean_minus_vis1", "1 wrong number", ROSE_LIGHT), ("clean_minus_vis5", "5 wrong numbers", ROSE),
-         ("clean_minus_del5", "5 numbers deleted", BROWN), ("clean_minus_posctrl2", "No evidence", GREEN)]
+         ("clean_minus_del5", "5 numbers deleted", GOLD), ("clean_minus_posctrl2", "No evidence", SLATE)]
 # a planted value counts as quoted if it appears as a whole number: no digit or decimal point before it, and no digit
 # or decimal-point-plus-digit after it (a sentence-ending period after the value still counts)
 QUOTE_RE = r"(?<![\d.]){}(?!\d|\.\d)"
@@ -154,12 +156,17 @@ def fig2():
             ax.bar(x, d["mean"], bw, color=col, ec="none", zorder=2)
             ax.errorbar(x, d["mean"], yerr=[[d["mean"] - lo], [hi - d["mean"]]], fmt="none", ecolor=INK, elinewidth=0.7,
                         capsize=1.6, capthick=0.7, zorder=3)
+            # the mean as a short mark, so a bar near zero is still visible, and its value above the interval
+            ax.plot([x - bw / 2, x + bw / 2], [d["mean"]] * 2, color=INK, lw=0.9, zorder=4, solid_capstyle="butt")
+            mv = round(d["mean"], 1) + 0.0
+            ctext(ax, x, hi + 0.22, f"{mv:.1f}".replace("-", "−"), ha="center", va="bottom", fs=MIN_FS, zorder=6,
+                  bbox=dict(fc="white", ec="none", pad=1.6))
         rt = A[m]["retest_abs_diff"]
-        ax.plot([i - 0.47, i + 0.47], [rt, rt], color=GRAY_NOCHECK, lw=1.1, ls=(0, (3, 1.6)), zorder=4,
+        ax.plot([i - 0.47, i + 0.47], [rt, rt], color=MUTED, lw=1.0, ls=(0, (3, 1.6)), zorder=1.5,
                 solid_capstyle="butt")
     ax.axhline(0, color=INK, lw=0.6, zorder=1)
     ax.set_xlim(-0.55, 2.55)
-    ax.set_ylim(-2.2, 9.2)
+    ax.set_ylim(-2.2, 9.9)
     ax.set_yticks([-2, 0, 2, 4, 6, 8])
     ax.set_yticklabels(["−2", "0", "2", "4", "6", "8"])
     ax.set_xticks(range(3)); ax.set_xticklabels([n for _, n in REVIEWERS], fontsize=7)
@@ -196,7 +203,7 @@ def fig2():
     title(ax2, 0.0, 1.02, "Yet the review names it")
 
     handles = [Patch(fc=c, ec="none", label=lab) for _, lab, c in CONDS]
-    handles += [Line2D([], [], color=GRAY_NOCHECK, lw=1.1, ls=(0, (3, 1.6)), label="Re-review noise"),
+    handles += [Line2D([], [], color=MUTED, lw=1.0, ls=(0, (3, 1.6)), label="Re-review noise"),
                 Line2D([], [], marker="D", ms=3.6, mfc="white", mec=INK, mew=0.6, lw=0, label="Chance quote, clean paper")]
     fig.legend(handles=handles, loc="upper center", bbox_to_anchor=(0.5, 1.0), ncol=6, frameon=False, fontsize=MIN_FS,
                handlelength=1.3, handletextpad=0.4, columnspacing=1.1, borderpad=0.25)
@@ -210,10 +217,10 @@ def fig2():
 # flags no more correct numbers than recompute (Sonnet p >= 4%, Opus p >= 6%).
 CHECKERS = [  # label, errors caught of 16, false alarms (None = not reported), fill, edge, hatch
     ("Recompute", 14, 27, PURPLE, PURPLE, None),
-    ("Sonnet audit,\nmatched alarm rate", 9, 10, TEAL, TEAL, None),
+    ("Sonnet audit,\nmatched alarm rate", 9, 10, GREEN, GREEN, None),
     ("Opus audit,\nmatched alarm rate", 12, 10, BLUE, BLUE, None),
     ("Opus audit, p ≥ 50%", 9, 3, BLUE_LIGHT, BLUE, None),
-    ("Recompute or\nOpus audit", 16, 31, PURPLE, BLUE, "////"),
+    ("Recompute or\nOpus audit", 16, 31, PURPLE, LIGHT, "////"),
 ]
 N_ERR = 16
 
@@ -257,6 +264,8 @@ def fig3():
 # ---------------------------------------------------------------- fig4: where the check sits decides what the agent does
 ARMS = [("none", "No check", GRAY_NOCHECK, GRAY_TXT), ("log", "Rule in prompt", AMBER, AMBER_TXT),
         ("feedback", "Feedback", FEEDBACK, FEEDBACK_TXT), ("gate", "Gate", PURPLE, PURPLE)]
+OUT_FILL = {"corrected": CORRECTED, "deleted": DELETED, "left": LEFT, "other": OTHER}
+OUT_LABEL = {"corrected": "Corrected", "deleted": "Deleted", "left": "Left wrong", "other": "Changed to a third value"}
 OUTCOMES = ["corrected", "deleted", "left", "other"]  # laundered never occurred; asserted below
 KINDS = [("flatter", "Flattering errors"), ("digit", "Neutral slips")]
 
@@ -298,11 +307,9 @@ def fig4():
                 v = cnt[o]
                 if not v:
                     continue
-                fc = {"corrected": col, "deleted": DELETED, "left": LEFT, "other": OTHER}[o]
-                ax.barh(y, v, 0.66, left=left, color=fc, ec=INK if o == "other" else "white",
-                        lw=0.6 if o == "other" else 0.8, hatch="////" if o == "other" else None, zorder=2)
-                if o != "other":
-                    ctext(ax, left + v / 2, y, str(v), color=on(fc), bg=fc, ha="center", va="center")
+                fc = OUT_FILL[o]
+                ax.barh(y, v, 0.66, left=left, color=fc, ec="white", lw=0.8, zorder=2)
+                ctext(ax, left + v / 2, y, str(v), color=on(fc), bg=fc, ha="center", va="center")
                 left += v
         ax.set_xlim(0, n[kind])
         ax.set_ylim(-0.5, len(ARMS) - 0.5)
@@ -319,9 +326,8 @@ def fig4():
         assert contrast(tc) >= 4.5
         t.set_color(tc)
     axes[1].set_yticklabels([])
-    handles = [Patch(fc=PURPLE, ec="none", label="Corrected (arm color)"), Patch(fc=DELETED, ec="none", label="Deleted"),
-               Patch(fc=LEFT, ec="none", label="Left wrong"),
-               Patch(fc="white", ec=INK, lw=0.6, hatch="////", label="Changed to a third value")]
+    seen = {o for k in C for o, v in C[k].items() if v}
+    handles = [Patch(fc=OUT_FILL[o], ec="none", label=OUT_LABEL[o]) for o in OUTCOMES if o in seen]
     fig.legend(handles=handles, loc="upper center", bbox_to_anchor=(0.5 + (lft - rgt) / W / 2, 1.0), ncol=4,
                frameon=False, fontsize=MIN_FS, handlelength=1.3, handletextpad=0.4, columnspacing=1.4, borderpad=0.25)
     save(fig, "fig4_placement")

@@ -5,8 +5,8 @@
 \subsection{The check and the hook}
 \label{app:tool}
 
-The checker extracts the numbers of the \LaTeX{} source and compares the number streams of the old and new text with a
-sequence diff, so a number that moved with its text is not treated as new. Numbers with decimals, percentages, and
+The checker extracts the numbers of the \LaTeX{} source and compares the lists of numbers in the old and new text
+with a sequence diff, so a number that moved with its text is not treated as new. Numbers with decimals, percentages, and
 values of at least 10 are checked; smaller bare integers are not. A tag is matched to a number by position on its
 line, so two copies of the same value on one line keep their own tags. Recipes run in a subprocess with the repository
 root as working directory; the runner records every file the recipe opens. Prose notes are files with the suffixes
@@ -17,12 +17,12 @@ value, read directly or scaled by 100. The percentage rule accepts a recipe that
 
 The hook runs as one script with four entry points: \code{init} (snapshot before the session), \code{pre}
 (PreToolUse on Edit, MultiEdit, Write, and Bash), \code{post} (PostToolUse on the same tools), and \code{stop}. Its
-mode is \code{gate}, \code{feedback}, or \code{log}, the last showing nothing to the agent. In gate mode the Stop hook
+mode is \code{gate}, \code{feedback}, or \code{log}; log mode shows nothing to the agent. In gate mode the Stop hook
 blocks at most three times by default. All decisions are appended to a log. In the experiments the hook timeout was
 raised to 900 s, because a full check of a large paper can exceed Claude Code's default of 60 s.
 
-The rules the agent receives in every arm that has them are the following. In the plugin, the same text arrives as
-context at session start.
+The agent receives the following rules in every arm that uses them. In the plugin, the same text is given to the
+agent as context at session start.
 \begin{promptbox}{Rules given to the writer (tool, feedback, gate, generate, and placebo arms)}
 \begin{lstlisting}[style=plain,basicstyle=\ttfamily\scriptsize]
 This repository uses a recompute check on the paper's numbers.
@@ -54,7 +54,7 @@ Haiku call labeled candidate numbers as results or settings; eligibility was dec
 in manifest order until 60 were eligible. Shifts were 2 to 4 points, or about 6\% for small values, one per sentence.
 Deletions were Haiku rewrites of the sentence without the number and with every other number kept; a sentence was
 dropped after three failed rewrites. Every paper was reviewed clean twice and in every other version once; the first
-20 papers received three reviews of the clean, 5 wrong, and 5 deleted versions. In all, 1,374 reviews were parsed.
+20 papers received three reviews of the clean, 5 wrong, and 5 deleted versions. In all, 1,374 reviews were parsed, and 1,371 of them gave a score.
 
 The pre-registered rule (fixed on 18 November 2026 before any review) declared a reviewer equivalent if the 90\%
 bootstrap interval of the 5 wrong minus 5 deleted difference lay within $\pm 3$ points, and informative only if its
@@ -65,7 +65,7 @@ Two earlier pilots shaped this design. On a 1--10 scale, Haiku and Sonnet gave 4
 removing the experiments barely moved the score, so we moved to a 0--100 percentile scale. In a pairwise pilot
 (220 judgments), where the judge saw the clean and the edited paper together in both orders, the clean paper won 88\%
 to 94\% of pairs against the 5 wrong version, and the judges' reasons show they compared the versions and checked
-derived numbers. A single-version review has no such reference.
+derived numbers. A review of a single version has no such reference.
 
 \begin{promptbox}{Reviewer system prompt (0--100 scale)}
 You are an expert reviewer for a top machine learning conference. Review the submission rigorously and fairly.
@@ -141,8 +141,11 @@ per arm.
 
 \begin{table}[h]
   \centering
-  \caption{Confirmed errors per arm in the pressured writing loop (both blind audits agree), against the numbers each
-  arm added or changed. About half of the errors were already in the starting draft and repeated by the writer.}
+  \caption{Confirmed errors per arm in the pressured writing loop, against the numbers each arm added or changed. An
+  error is confirmed when the first audit, which could read the recipes, and a blind re-audit agree. Only the numbers
+  a checker flagged and a random 80 of the passes were audited (about 380 of 1,192), so the rates are lower bounds;
+  the random sample of Section~\ref{sec:checkers} has 4.3 agreed errors per 100 numbers. About half of the errors were
+  already in the starting draft and repeated by the writer.}
   \label{tab:perarm}
   \small
   \begin{tabular}{@{}llccc@{}}
@@ -163,7 +166,7 @@ per arm.
   \caption{Fresh reviews show no reliable score gain once best-of-three selection is removed. Change from the round-0
   draft to the final draft, three fresh reviews of each draft by the loop reviewer (Sonnet) and a held-out reviewer
   (Opus), 300 reviews in all; brackets are 95\% intervals. Round-0 means are 26.8 (Sonnet) and 18.8 (Opus) on the
-  0--100 scale; three reviews of one draft spread by 2 to 3 points.}
+  0--100 scale; three reviews of one draft have a standard deviation of about 2 points.}
   \label{tab:rescore}
   \small
   \begin{tabular}{@{}llcc@{}}
@@ -198,13 +201,14 @@ and two others. In live use, the last three groups return to the agent as fixabl
 An earlier, non-random audit of recompute's failures let Sonnet auditors read the recipes. A blind re-audit of the
 contested items, with recipes and tags removed, overturned 17 of its 40 errors, in each case because the recipe had
 computed a different quantity (the wrong baseline, another denominator, a neighboring arm) and the auditor had
-adopted it. All results in the main text use blind audits.
+accepted it. Every other result in the main text uses blind audits only; Table~\ref{tab:perarm} counts an error
+only when this first audit and the blind re-audit agree.
 
 For the human check, checker A recomputed 122 rows from the raw files: all 13 agreed errors, all 9 disputed numbers,
 all 24 correct numbers that recompute flagged, and 76 that it passed. Checker B independently recomputed a 50-row
-subset. Neither saw any model label. Most disagreements between checker A and the model labels come from one source:
-checker A accepted narrative entries in a results registry file as evidence, which the instructions did not exclude
-explicitly but the model auditors and checker B did not accept. Table~\ref{tab:checkers} therefore uses checker B's
+subset. Neither saw any model label. Most disagreements between checker A and the model labels come from one source.
+Checker A accepted narrative entries in a results registry file as evidence. The instructions did not explicitly
+exclude these entries, but the model auditors and checker B did not accept them. Table~\ref{tab:checkers} therefore uses checker B's
 label wherever B checked the row and checker A's elsewhere; with checker A's labels alone, recompute catches 11 of 13
 human-found errors and the Sonnet audit agent 2 of 13.
 
@@ -242,10 +246,10 @@ out.
 The placement papers start from the tagged replay drafts of the Haiku review arm. Tags whose recipes failed in the
 replay were removed, so every remaining tagged number recomputes before planting. One Sonnet call per paper labeled
 which tagged numbers report a result of the paper's own method and whether higher or lower is better. Four of these
-were shifted by 6 to 12\% in the better direction, and two other tagged numbers received a last-digit slip. The seed
-sets the planted numbers and the session. Ten repositories had replay drafts; two could not carry the plant (one had
-no recipes and one had a single passing recipe), which was found when setup failed and before any session ran, so
-the study uses 8 (Table~\ref{tab:repos}). One of the 8 has no neutral candidate, so its three papers carry four
+were shifted by 6 to 13\% in the better direction, and two other tagged numbers received a last-digit slip. The seed
+sets the planted numbers and the session. Ten repositories had replay drafts, but two could not hold the planted
+errors (one had no recipes and one had a single passing recipe). We found this when setup failed, before any session
+ran, so the study uses 8 (Table~\ref{tab:repos}). One of the 8 has no neutral candidate, so its three papers carry four
 errors, and each arm holds 138 planted errors.
 
 \begin{table}[h]
@@ -320,9 +324,9 @@ correction across the seven.
                                                                & Feedback vs.\ tool & 2.96 [1.54, 4.21] & $<10^{-4}$ & \cmark \\
                                                                & Generate vs.\ tool & 2.96 [1.63, 4.25] & $<10^{-4}$ & \cmark \\
     Does blocking add anything?                                & Gate vs.\ feedback & 0.00 [0.00, 0.00] & 1.00       & \xmark \\
-    Recompute at each edit, or detect at the end?              & Feedback vs.\ audit & 0.13 [0.04, 0.25] & 0.023     & \xmark \\
+    Recompute at each edit, or detect at the end?              & Feedback vs.\ audit & 0.12 [0.04, 0.25] & 0.023     & \xmark \\
     Is the gate more than friction?                            & Gate vs.\ placebo  & 2.71 [1.46, 3.88] & $<10^{-4}$ & \cmark \\
-    Does the offer alone help?                                 & Tool vs.\ none     & 0.13 [$-$0.13, 0.38] & 0.22    & \xmark \\
+    Does the offer alone help?                                 & Tool vs.\ none     & 0.12 [$-$0.13, 0.38] & 0.22    & \xmark \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -331,30 +335,42 @@ correction across the seven.
 Two pilots on 6 repositories with one seed preceded the study (Table~\ref{tab:pilot},
 Fig.~\ref{fig:pilot}). The first planted 6 errors per paper that were not chosen to flatter: two last-digit slips, two
 shifts of about 8\%, and two swaps with another value of the same paper. The second introduced flattering errors and
-an arm with no rules at all. Both gave the pattern of the full study. In the first pilot no agent added a new tagged
+an arm with no rules at all. Both showed the same pattern as the full study. In the first pilot no agent added a new tagged
 number, which is why the full study's reviewer asks for new analyses.
 
 \begin{table}[h]
   \centering
-  \caption{The two placement pilots (6 repositories, one seed). The first plants 36 errors per arm, none chosen to
-  flatter; the second plants 24 flattering and 12 neutral errors per arm. No arm laundered an error or turned a
-  correct number wrong. Turns are summed over the first pilot's 6 sessions. -- means the arm was not part of that
-  pilot.}
+  \caption{The two placement pilots (6 repositories, one seed). Left: the first pilot plants 36 errors per arm, none
+  chosen to flatter, and sums turns over its 6 sessions. Right: the second pilot plants 24 flattering and 12 neutral
+  errors per arm and adds an arm with no check. No arm of either pilot laundered an error or turned a correct number
+  wrong.}
   \label{tab:pilot}
   \small
-  \begin{tabular}{@{}lcccc@{}}
+  \begin{minipage}[t]{0.43\linewidth}\centering
+  \begin{tabular}[t]{@{}lcc@{}}
     \toprule
     \rowcolor{headgray}
-    & First pilot & \multicolumn{2}{c}{Second pilot} & \\
-    \rowcolor{headgray}
-    Arm & \makecell{Corrected\\(of 36)} & \makecell{Flattering\\(of 24)} & \makecell{Neutral\\(of 12)} & Turns \\
+    First pilot & \makecell{Corrected\\(of 36)} & Turns \\
     \midrule
-    No rules, no hook               & --        & 14        & 3         & --  \\
-    Rule and check in the prompt    & 11        & 10        & 6         & 35  \\
-    \ours Feedback after each edit  & \best{36} & \best{24} & \best{12} & 58  \\
-    \ours Blocking gate             & \best{36} & \best{24} & \best{12} & 112 \\
+    Rule in the prompt   & 11        & 35  \\
+    \ours Feedback       & \best{36} & 58  \\
+    \ours Gate           & \best{36} & 112 \\
     \bottomrule
   \end{tabular}
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.54\linewidth}\centering
+  \begin{tabular}[t]{@{}lcc@{}}
+    \toprule
+    \rowcolor{headgray}
+    Second pilot & \makecell{Flattering\\corrected (of 24)} & \makecell{Neutral\\corrected (of 12)} \\
+    \midrule
+    No check             & 14        & 3         \\
+    Rule in the prompt   & 10        & 6         \\
+    \ours Feedback       & \best{24} & \best{12} \\
+    \ours Gate           & \best{24} & \best{12} \\
+    \bottomrule
+  \end{tabular}
+  \end{minipage}
 \end{table}
 
 \begin{figure}[h]

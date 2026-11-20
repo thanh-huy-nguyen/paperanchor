@@ -19,9 +19,9 @@ The four flattering planted errors of each paper raise a result of the paper's o
 that number less favorable and goes against the note. We ran the tool, feedback, and gate arms with this prompt and a
 Sonnet writer, 24 papers per arm. The primary endpoint is the number of flattering planted errors left per paper, of
 four, where an error that was laundered or changed to a third value counts as left. Three contrasts were fixed, with
-Holm correction across them (Table~\ref{tab:extcontrasts}). The plan also fixed how a split outcome would be read: had
-the gate ended with fewer flattering errors left than feedback but more deleted or laundered ones, we would have
-reported that blocking moved the errors and did not remove them. Table~\ref{tab:extdefend} gives the outcomes.
+Holm correction across them (Table~\ref{tab:extcontrasts}). The plan also fixed how we would read a mixed outcome. If
+the gate had left fewer flattering errors than feedback but had deleted or laundered more of them, we would have
+reported that blocking moved the errors instead of removing them. Table~\ref{tab:extdefend} gives the outcomes.
 
 \begin{table}[h]
   \centering
@@ -71,33 +71,35 @@ planted errors a Haiku or an Opus writer would have corrected with no check in r
   \end{tabular}
 \end{table}
 
-\paragraph{Secondary outcomes.}
-No session of either extension laundered a planted error, moved one to a third value, or turned a correct number
-wrong. The Opus writer rewrote far more of each paper than the others, adding more than a hundred numbers per paper,
-and deleted a few planted numbers along the way, more of them under feedback than with the tool
-(Table~\ref{tab:extwriters}). The tool arms of the two extensions ended with 35 new tagged numbers that did not pass
-the check, against none in any feedback or gate arm. They are not 35 wrong values. In 20 the recipe broke a rule
-(a typed constant, no data file read, or a call to \code{round}); in 12 the checker used in the study misread the
-typesetting (a thousands separator written as \code{\{,\}}, a minus sign in its own math group, or the same digits
-with two signs on one line); and in 3, all from the Haiku writer, the printed value did not round to what the recipe
-gives. Under feedback the writer met each of these messages during the session and resolved it. The released
-\tool{} reads the three typesetting forms; the harness in the repository keeps the checker as it was measured.
-
 \begin{table}[h]
   \centering
   \caption{Contrasts of the extensions, fixed before the sessions ran: how many fewer errors per paper the first arm
   leaves than the second, over paired papers. Brackets are 95\% bootstrap intervals over repositories. The first
-  three contrasts count flattering errors and share one Holm correction at 0.05; the last two count all planted errors and
-  are reported without correction.}
+  three contrasts count flattering errors and are tested at 0.05 after one shared Holm correction; the last two count
+  all planted errors and are tested at 0.05 without correction.}
   \label{tab:extcontrasts}
   \footnotesize
   \setlength{\tabcolsep}{3pt}
   \begin{tabular}{@{}llcccc@{}}
     \toprule
     \rowcolor{headgray}
-    Question & Contrast & Papers & Fewer errors left & One-sided $p$ & Holm \\
+    Question & Contrast & Papers & Fewer errors left & One-sided $p$ & Significant \\
     \midrule
     \extcontrastrows
     \bottomrule
   \end{tabular}
 \end{table}
+
+\paragraph{Secondary outcomes.}
+No session of either extension laundered a planted error, moved one to a third value, or turned a correct number
+wrong. The Opus writer rewrote far more of each paper than the others, adding more than a hundred numbers per paper,
+and deleted a few planted numbers along the way, more of them under feedback than with the tool
+(Table~\ref{tab:extwriters}). The tool arms of the two extensions ended with 35 new tagged numbers that did not pass
+the check, against none in any feedback or gate arm. These are not 35 wrong values. In 20 the recipe broke a rule
+(a typed constant, no data file read, or a call to \code{round}); in 12 the checker used in the study misread the
+typesetting (a thousands separator written as \code{\{,\}}, a minus sign in its own math group, or the same digits
+with two signs on one line); and in 3, all from the Haiku writer, the printed value did not round to what the recipe
+gives. Under feedback, the writer received each of these messages during the session and resolved it. The released
+\tool{} handles these three typesetting forms, while the experiment harness in the repository keeps the checker
+exactly as it was measured.
+

@@ -22,6 +22,7 @@ from make_concept import (agent, box, check_badge, cross_badge, lines, page, pil
                           text_w)
 from make_logo import draw as bob
 from style import (AMBER, AMBER_EDGE, AMBER_FILL, AMBER_TXT, ARROW, BLUE, BLUE_EDGE, BLUE_FILL, BLUE_TXT, DISPLAY,
+                   PARCH, PARCH_EDGE,
                    DISPLAY_SCALE, ERROR_TXT, GOLD, INK, LAV_EDGE, LAVENDER, LIGHT, MUTED, PURPLE, ROSE, ROSE_EDGE,
                    ROSE_FILL, ROSE_TXT, SLATE, SLATE_EDGE, SLATE_FILL, TEAL, TEAL_EDGE, TEAL_FILL, TEAL_TXT, arrow,
                    number, path_arrow)
@@ -30,9 +31,9 @@ W, H = TEXT_W, 5.0
 MONO = "DejaVu Sans Mono"
 MFS = 6.0                      # code size (pt); DejaVu Sans Mono advances 0.602 em
 CW = 0.602 * MFS / 72          # width of one code character (in)
-DARK = "#3A3247"
-CODE_BG = "#FBFAFD"
-DEL_BG, ADD_BG = "#FBE3E4", "#E2F3E4"
+DARK = "#2B2530"
+CODE_BG = "#FBF9F5"
+DEL_BG, ADD_BG = "#F2DCDA", "#DDE8DD"
 GREEN_TXT = "#2E7D32"
 PUBLISHED = {"generate": 0.0, "gate": 0.0, "feedback": 0.0, "tool": 2.96, "audit": 0.12}
 
@@ -150,7 +151,7 @@ def ic_generate(ax, cx, cy):
     """A placeholder chip that the build turns into a number."""
     box(ax, cx - 0.36, cy - 0.085, 0.3, 0.17, fc="white", ec=PURPLE, lw=0.9, r=0.04, z=5)
     ax.text(cx - 0.21, cy - 0.004, "\\val", family=MONO, fontsize=MFS, color=PURPLE, ha="center", va="center", zorder=7)
-    arrow(ax, (cx - 0.03, cy), (cx + 0.1, cy), color=PURPLE, lw=1.4, head=3.2)
+    arrow(ax, (cx - 0.04, cy), (cx + 0.1, cy), color=PURPLE, lw=1.1)
     box(ax, cx + 0.12, cy - 0.085, 0.26, 0.17, fc=PURPLE, ec=PURPLE, lw=0.9, r=0.04, z=5)
     ax.text(cx + 0.25, cy - 0.004, "81.8", fontsize=MIN_FS, color="white", ha="center", va="center", zorder=7, weight=600)
 
@@ -207,7 +208,7 @@ def dots(ax, cx, cy, left, bg, n=6, r=0.043, gap=0.115):
         if i < k:
             ax.add_patch(Circle((x0 + i * gap, cy), r, fc=ERROR_TXT, ec=ERROR_TXT, lw=0.8, zorder=6))
         else:
-            ax.add_patch(Circle((x0 + i * gap, cy), r, fc="white", ec=LIGHT, lw=0.8, zorder=6))
+            ax.add_patch(Circle((x0 + i * gap, cy), r, fc="white", ec=MUTED, lw=0.7, zorder=6))
 
 
 # ---------------------------------------------------------------- figure
@@ -218,34 +219,34 @@ def main():
     fig.canvas.draw()
     left = errors_left()
 
-    # ======================= top row: three lanes
+    # ======================= top row: three lanes, joined by one straight line at the height of the edit (SPINE)
     LY0, LY1 = 2.06, H - 0.04
     LH = LY1 - LY0
     L1, L2, L3 = (0.04, 1.80), (1.92, 4.72), (4.84, W - 0.04)
-    lane(ax, L1[0], LY0, L1[1] - L1[0], LH, BLUE_FILL, BLUE_EDGE, 1, "The agent edits a number")
+    lane(ax, L1[0], LY0, L1[1] - L1[0], LH, PARCH, PARCH_EDGE, 1, "The agent edits a number")
     lane(ax, L2[0], LY0, L2[1] - L2[0], LH, LAVENDER, LAV_EDGE, 2, "The hook reruns its recipe")
-    lane(ax, L3[0], LY0, L3[1] - L3[0], LH, TEAL_FILL, TEAL_EDGE, 3, "The verdict returns")
+    lane(ax, L3[0], LY0, L3[1] - L3[0], LH, LAVENDER, LAV_EDGE, 3, "The verdict returns")
 
-    # ----- lane 1: reviewer pushes, the agent edits
-    bg = BLUE_FILL
+    # ----- lane 1: the review asks for a change, the agent edits
+    bg = PARCH
     ya = 4.27
     XA, XR = 0.62, 1.45
     agent(ax, XA, ya, w=0.48, h=0.38)
     reviewer(ax, XR, ya, s=0.36)
-    arrow(ax, (XR - 0.23, ya), (XA + 0.3, ya), color=ROSE, lw=2.0, head=4.2)
-    label(ax, (XA + XR) / 2 + 0.03, ya + 0.1, "Review", bg, color=ROSE_TXT, style="italic", va="bottom")
+    arrow(ax, (XR - 0.22, ya), (XA + 0.29, ya), color=ROSE)
+    label(ax, (XA + XR) / 2 + 0.03, ya + 0.08, "review", bg, color=ROSE_TXT, style="italic", va="bottom")
     label(ax, XA, ya - 0.3, "Writing agent", bg)
     label(ax, XR, ya - 0.3, "Reviewer", bg)
 
-    EX0, EW = 0.26, 1.36
+    EX0, EW = 0.2, 1.36
     EY0, EH = 2.92, 0.72
-    arrow(ax, (XA, ya - 0.4), (XA, EY0 + EH + 0.03), color=ARROW, lw=2.2, head=4.5)
+    SPINE = EY0 + EH / 2
+    arrow(ax, (XA, ya - 0.39), (XA, EY0 + EH + 0.04))
     top = card(ax, EX0, EY0, EW, EH, "Edit paper/main.tex", DARK)
     for i, (sign, fc_, num, col) in enumerate((("-", DEL_BG, "81.8", INK), ("+", ADD_BG, "84.8", ERROR_TXT))):
         y = top - 0.12 - i * 0.15
         ax.add_patch(Rectangle((EX0 + 0.012, y - 0.07), EW - 0.024, 0.14, fc=fc_, ec="none", zorder=5))
-        mono(ax, EX0 + 0.06, y, [(sign + " hits ", INK), (num, col), ("\\%", INK), ("\\src{acc12}", PURPLE)],
-             weight="bold" if False else "normal")
+        mono(ax, EX0 + 0.06, y, [(sign + " hits ", INK), (num, col), ("\\%", INK), ("\\src{acc12}", PURPLE)])
     label(ax, EX0 + 0.06, EY0 + 0.115, "The tag names its recipe", CODE_BG, color=MUTED, ha="left",
           style="italic")
 
@@ -258,103 +259,88 @@ def main():
     for s in ("Stale note", "Denominator"):
         x = chip(ax, x, 2.22, s, AMBER_TXT, "white", AMBER_EDGE) + 0.05
 
-    # ----- the hook, on the border between lanes 1 and 2
-    HX, HY = (L1[1] + L2[0]) / 2, EY0 + EH / 2
-    ax.add_patch(Circle((HX, HY), 0.2, fc="white", ec=PURPLE, lw=1.4, zorder=9))
-    bob(ax, HX, HY + 0.005, s=0.165, lw=0.55, z=10)
-    pill(ax, HX, HY - 0.3, "Hook", PURPLE, fc="white", z=10)
-
-    # ----- lane 2: recipe card, raw data, run, compare, rules
+    # ----- lane 2: the hook catches the edit and runs the recipe on the raw data
     bg = LAVENDER
+    HX, HR = L2[0] + 0.3, 0.19
+    arrow(ax, (EX0 + EW + 0.05, SPINE), (HX - HR - 0.05, SPINE))
+    ax.add_patch(Circle((HX, SPINE), HR, fc="white", ec=PURPLE, lw=1.3, zorder=9))
+    bob(ax, HX, SPINE + 0.005, s=0.155, lw=0.55, z=10)
+    pill(ax, HX, SPINE - 0.31, "Hook", PURPLE, fc="white", z=10)
+
     code = [[("@source", PURPLE), ("(", INK), ('"acc12"', TEAL_TXT), (",", INK)],
             [("  means=", INK), ('"accuracy, 12 frames"', TEAL_TXT), (")", INK)],
             [("def ", PURPLE), ("acc12():", INK)],
             [("  d = load(", INK), ('"eval/frames.json"', TEAL_TXT), (")", INK)],
             [("  return ", PURPLE), ("100 * mean(d[", INK), ('"ok"', TEAL_TXT), ("])", INK)]]
-    RX0 = L2[0] + 0.32
     RW = max(sum(len(s) for s, _ in ln) for ln in code) * CW + 0.14
     RH = 0.17 + len(code) * 0.135 + 0.1
-    RY0 = 4.56 - RH
+    RX0, RY0 = L2[0] + 0.16, 4.6 - RH
     top = card(ax, RX0, RY0, RW, RH, "paper/sources.py", PURPLE)
     for i, ln in enumerate(code):
         mono(ax, RX0 + 0.07, top - 0.115 - i * 0.135, ln)
-    path_arrow(ax, [(HX + 0.21, HY), (RX0 - 0.13, HY), (RX0 - 0.13, RY0 + 0.3), (RX0 - 0.02, RY0 + 0.3)], color=ARROW,
-               lw=2.2, r=0.07, head=4.0)
 
-    # raw data, locked in a snapshot
+    # raw data, locked in a snapshot, read by the recipe
     DX = (RX0 + RW + L2[1]) / 2 + 0.02
     DY = RY0 + RH - 0.42
     data_stack(ax, DX, DY)
     lock(ax, DX + 0.2, DY - 0.2)
     yl = top - 0.115 - 3 * 0.135
-    arrow(ax, (DX - 0.26, yl), (RX0 + RW + 0.03, yl), color=TEAL, lw=1.6, head=3.6, ls=(0, (2.2, 1.4)))
+    arrow(ax, (DX - 0.27, yl), (RX0 + RW + 0.04, yl), color=TEAL)
     label(ax, DX, DY - 0.4, "Raw data,", bg, color=TEAL_TXT)
     label(ax, DX, DY - 0.51, "snapshot", bg, color=TEAL_TXT)
 
-    # run, value, compare
-    CY = 2.98
-    BX = RX0 + 0.14
-    arrow(ax, (BX, RY0 - 0.02), (BX, CY + 0.16), color=ARROW, lw=2.2, head=4.0)
-    run_badge(ax, BX, CY, r=0.13)
-    TA, TB = BX + 0.7, L2[1] - 0.5
-    arrow(ax, (BX + 0.16, CY), (TA - 0.4, CY), color=ARROW, lw=2.2, head=4.0)
-    tile(ax, TA, CY, "81.8421", PURPLE)
-    tile(ax, TB, CY, "84.8", ERROR_TXT)
-    neq_badge(ax, (TA + TB) / 2, CY)
-    label(ax, TA, CY + 0.235, "Recipe returns", bg)
-    label(ax, TB, CY + 0.235, "Paper prints", bg)
-    label(ax, (TA + TB) / 2, CY - 0.24, "compared at the printed precision", bg, color=MUTED, style="italic")
+    # run the recipe, then compare its value with the printed one, all on the spine
+    BX, BR = HX + HR + 0.33, 0.13
+    arrow(ax, (HX + HR + 0.04, SPINE), (BX - BR - 0.04, SPINE))
+    arrow(ax, (BX, RY0 - 0.03), (BX, SPINE + BR + 0.04))
+    run_badge(ax, BX, SPINE, r=BR)
+    TW = 0.64
+    TB = L2[1] - 0.1 - TW / 2
+    TA = BX + BR + 0.2 + TW / 2
+    arrow(ax, (BX + BR + 0.04, SPINE), (TA - TW / 2 - 0.04, SPINE))
+    tile(ax, TA, SPINE, "81.8421", PURPLE, w=TW, fs=9)
+    tile(ax, TB, SPINE, "84.8", ERROR_TXT, w=TW, fs=9)
+    neq_badge(ax, (TA + TB) / 2, SPINE, r=0.1)
+    label(ax, TA, SPINE - 0.25, "Recipe returns", bg)
+    label(ax, TB, SPINE - 0.25, "Paper prints", bg)
+    label(ax, (TA + TB) / 2, SPINE - 0.42, "compared at the printed precision", bg, color=MUTED, style="italic")
 
-    # the three rules
+    # the three rules every recipe must pass (this number fails the first)
+    label(ax, L2[0] + 0.18, 2.66, "Three rules for every recipe", bg, color=MUTED, ha="left", style="italic")
     x = L2[0] + 0.18
     for s, ok in (("Value follows", False), ("Reads raw data", True)):
-        x = status(ax, x, 2.47, s, ok, bg) + 0.07
-    x = status(ax, L2[0] + 0.18, 2.25, "No typed constant", True, bg) + 0.07
-    chip(ax, x, 2.25, "No model call", MUTED, "white", LAV_EDGE, h=0.17)
+        x = status(ax, x, 2.45, s, ok, bg) + 0.07
+    x = status(ax, L2[0] + 0.18, 2.23, "No typed constant", True, bg) + 0.12
+    label(ax, x, 2.23, "The check makes no model call.", bg, color=MUTED, ha="left", style="italic")
 
-    # ----- lane 3: the message and the fix
-    bg = TEAL_FILL
+    # ----- lane 3: the message reaches the agent in the same turn, and the agent fixes the number
+    bg = LAVENDER
     MX0, MW = L3[0] + 0.13, L3[1] - L3[0] - 0.26
     msg = [[("84.8", ERROR_TXT), (" (key", INK), ("  acc12", PURPLE), ("): recipe", INK)],
            [("gives", INK), ("  81.8421", PURPLE), (", which does", INK)],
            [("not round to", INK), ("  84.8", ERROR_TXT), (".", INK)],
            [("If the recipe is right,", INK)], [("change the number.", INK)]]
-    MH = 0.17 + len(msg) * 0.13 + 0.1
-    MY0 = 4.56 - MH
+    MH = 0.17 + len(msg) * 0.145 + 0.1
+    MY0 = SPINE - 0.2                       # the spine enters the message card through its left side
     top = card(ax, MX0, MY0, MW, MH, "Hook to agent", PURPLE, fc="white", mono_head=False)
     for i, ln in enumerate(msg):
-        runs(ax, MX0 + 0.08, top - 0.115 - i * 0.13, ln)
-    # from the comparison (lane 2) up into the message
-    path_arrow(ax, [(TB + 0.39, CY), (L3[0] + 0.02, CY), (L3[0] + 0.02, MY0 + 0.3), (MX0 - 0.02, MY0 + 0.3)],
-               color=ARROW, lw=2.2, r=0.07, head=4.0)
+        runs(ax, MX0 + 0.08, top - 0.12 - i * 0.145, ln)
+    arrow(ax, (TB + TW / 2 + 0.04, SPINE), (MX0 - 0.04, SPINE))
 
-    PW, PH = 0.92, 0.6
-    PX0 = (L3[0] + L3[1]) / 2 - PW / 2 + 0.06
-    PY0 = 2.8
-    arrow(ax, (PX0 + PW / 2, MY0 - 0.02), (PX0 + PW / 2, PY0 + PH + 0.04), color=ARROW, lw=2.2, head=4.0)
-    tx0, tx1 = page(ax, PX0, PY0, PW, PH)
-    yc = PY0 + PH / 2
-    lines(ax, tx0, tx1, [yc + 0.19, yc + 0.11], frac=[1.0, 0.8])
-    lines(ax, tx0, tx1, [yc - 0.13, yc - 0.21], frac=[0.9, 0.55])
-    runs(ax, tx0, yc - 0.01, [("accuracy ", INK), ("81.8%", PURPLE)])
-    check_badge(ax, PX0 + PW + 0.02, yc + 0.08, fc=TEAL_TXT)
-    label(ax, PX0 + PW / 2, PY0 - 0.13, "The agent fixes it", bg)
-    pill(ax, PX0 + PW / 2 - 0.06, 2.42, "No planted error left", TEAL_TXT, fc="white", h=0.17, z=9)
-    label(ax, PX0 + PW / 2 - 0.06, 2.26, "in any of 24 papers", bg, color=TEAL_TXT)
-
-    # return to the agent, in the same turn
-    yret = 1.93
-    xin = 0.13
-    path_arrow(ax, [(PX0 + PW + 0.03, yc - 0.16), (L3[1] - 0.12, yc - 0.16), (L3[1] - 0.12, yret), (xin, yret), (xin, ya),
-                    (XA - 0.27, ya)],
-               color=PURPLE, lw=2.4, r=0.1, head=4.6, z=3)
-    pill(ax, 3.3, yret, "The fix lands in the same turn, before the reviewer reads anything", PURPLE, fc="white",
-         h=0.17, z=9)
+    # the fixed line of the paper, right below the message
+    FW, FH = MW - 0.1, 0.3
+    FX0, FY0 = MX0 + 0.05, 2.47
+    arrow(ax, (FX0 + FW / 2, MY0 - 0.04), (FX0 + FW / 2, FY0 + FH + 0.04))
+    tx0, tx1 = page(ax, FX0, FY0, FW, FH)
+    runs(ax, tx0 + 0.03, FY0 + FH / 2, [("accuracy ", INK), ("81.8%", PURPLE)])
+    check_badge(ax, FX0 + FW - 0.04, FY0 + FH / 2 - 0.0, r=0.075)
+    label(ax, FX0 + FW / 2, 2.32, "The agent fixes the number", bg)
+    label(ax, FX0 + FW / 2, 2.17, "in the same turn", bg, color=MUTED, style="italic")
 
     # ======================= bottom row: six placements
     BY0, BH = 0.04, 1.72
-    box(ax, 0.04, BY0, W - 0.08, BH, fc="#FAF8F3", ec="#E0D8C6", lw=1.0, r=0.1, z=0)
-    cream = "#FAF8F3"
+    box(ax, 0.04, BY0, W - 0.08, BH, fc=PARCH, ec=PARCH_EDGE, lw=1.0, r=0.1, z=0)
+    cream = PARCH
     ax.text(0.2, BY0 + BH - 0.19, "Where the check can sit", fontsize=7.6 * DISPLAY_SCALE, family=DISPLAY, weight=700,
             color=INK, ha="left", va="center", zorder=7)
     # legend for the dots
@@ -369,7 +355,7 @@ def main():
              ("Feedback", "Told after the edit", ic_feedback, LAVENDER, LAV_EDGE, PURPLE, left["feedback"]),
              ("Tool", "The agent may call it", ic_tool, AMBER_FILL, AMBER_EDGE, AMBER_TXT, left["tool"]),
              ("Audit agent", "Rereads the paper", ic_audit, BLUE_FILL, BLUE_EDGE, BLUE_TXT, left["audit"]),
-             ("Reviewer", "Scores the paper", ic_reviewer, SLATE_FILL, SLATE_EDGE, "#465A6E", None)]
+             ("Reviewer", "Scores the paper", ic_reviewer, SLATE_FILL, SLATE_EDGE, SLATE, None)]
     n, gap = len(cards), 0.07
     cw = (W - 0.08 - 0.24 - gap * (n - 1)) / n
     cy0, ch = BY0 + 0.36, 1.02
@@ -384,8 +370,7 @@ def main():
         label(ax, cx, cy0 + ch - 0.66, sub, fc_, color=MUTED, style="italic")
         if k is not None:
             dots(ax, cx, cy0 + 0.22, k, fc_)
-            label(ax, cx, cy0 + 0.09, f"{k:.1f} left" if 0 < k < 10 and round(k, 1) != int(k) else f"{k:.0f} left",
-                  fc_)
+            label(ax, cx, cy0 + 0.09, f"{k:.2f} left" if k else "0 left", fc_)   # same precision as Table 5
         else:  # the reviewer names the error but its score moves by about 3 of 100 points
             bw = cw - 0.3
             ax.add_patch(FancyBboxPatch((cx - bw / 2, cy0 + 0.195), bw, 0.05, boxstyle="round,pad=0,rounding_size=0.025",

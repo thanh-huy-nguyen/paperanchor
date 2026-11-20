@@ -14,19 +14,19 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap, to_hex
 from matplotlib.patches import FancyBboxPatch, Patch
 
-from make_figures import (DELETED, FEEDBACK, FEEDBACK_TXT, GRAY_NOCHECK, GRAY_TXT, MIN_FS, PROJ, TEXT_W, contrast,
-                          ctext, on, save, style_axis, title)
-from style import (AMBER, AMBER_TXT, BLUE, BLUE_TXT, BROWN, BROWN_TXT, GRID, INK, LIGHT, MUTED, PURPLE, ROSE_TXT, TEAL,
-                   TEAL_TXT)
+from make_figures import (CORRECTED, DELETED, FEEDBACK, FEEDBACK_TXT, GENERATE, GRAY_NOCHECK, GRAY_TXT, LEFT, MIN_FS,
+                          OTHER, PROJ, TEXT_W, contrast, ctext, on, save, style_axis, title)
+from style import (AMBER, AMBER_TXT, BLUE, BLUE_TXT, BROWN, BROWN_TXT, GOLD, GRID, INK, LIGHT, MUTED, PARCH,
+                   PARCH_EDGE, PURPLE, ROSE, ROSE_TXT, TEAL, TEAL_TXT)
 
-GENERATE, GENERATE_TXT = "#7A4FB3", "#5E3A93"
+GENERATE_TXT = GENERATE
 # arm, label, color, label color (gray is reserved for "no check")
 ARMS = [("none", "No check", GRAY_NOCHECK, GRAY_TXT), ("tool", "Tool in the prompt", AMBER, AMBER_TXT),
         ("random", "Random denial (placebo)", BROWN, BROWN_TXT), ("audit", "Opus audit at the end", BLUE, BLUE_TXT),
         ("feedback", "Feedback (ours)", FEEDBACK, FEEDBACK_TXT), ("gate", "Gate (ours)", PURPLE, PURPLE),
         ("generate", "Generate (ours)", GENERATE, GENERATE_TXT)]
 LEFT_KEYS = [f"{k}_{o}" for k in ("flatter", "digit") for o in ("left", "laundered", "other")]
-ROSES = LinearSegmentedColormap.from_list("roses", ["#F9DDE5", ROSE_TXT])
+ROSES = LinearSegmentedColormap.from_list("roses", ["#E6C9C6", ROSE])
 
 
 def rows(name):
@@ -62,13 +62,12 @@ def fig5_study():
                 k = left_of(r)
                 tot += k; n += 1
                 x = gx0 + j * (len(seeds) * cell + rgap) + s * cell
-                fc = "white" if k == 0 else to_hex(ROSES((k - 1) / 5))
+                fc = PARCH if k == 0 else to_hex(ROSES((k - 1) / 5))
                 ax.add_patch(FancyBboxPatch((x + 0.008, y + 0.008), cell - 0.016, cell + 0.05 - 0.016,
                                             boxstyle="round,pad=0,rounding_size=0.018", fc=fc,
-                                            ec=LIGHT if k == 0 else fc, lw=0.5, zorder=2))
-                if k:
-                    ax.text(x + cell / 2, y + (cell + 0.05) / 2 - 0.003, str(k), fontsize=5.6, ha="center", va="center",
-                            color=on(fc), zorder=3)
+                                            ec=PARCH_EDGE if k == 0 else fc, lw=0.5, zorder=2))
+                ax.text(x + cell / 2, y + (cell + 0.05) / 2 - 0.003, str(k), fontsize=5.6, ha="center", va="center",
+                        color=MUTED if k == 0 else on(fc), zorder=3)
         ctext(ax, gx0 + gw + 0.3, y + cell / 2 + 0.02, f"{tot / n:.2f}", fs=7, ha="center", va="center",
               color=tc, weight=600)
     for j, _ in enumerate(repos):
@@ -76,7 +75,7 @@ def fig5_study():
         ctext(ax, x, gy0 - 0.1, f"R{j + 1}", ha="center", va="center", color=MUTED)
     ctext(ax, gx0 + gw / 2, gy0 - 0.26, "Repository (three seeds each)", ha="center", va="center")
     ctext(ax, gx0 + gw + 0.3, gy0 - 0.1, "Mean", ha="center", va="center", color=MUTED)
-    title(ax, gx0 / W, (gy0 + len(ARMS) * rowh + 0.08) / H, "Planted errors left in each paper, of six")
+    title(ax, gx0 / W, (gy0 + len(ARMS) * rowh + 0.08) / H, "Planted errors left in each paper")
     # ---- right: cost, as agent turns per paper, on the same rows
     bx0 = gx0 + gw + 0.78
     bmax = W - bx0 - 0.42
@@ -97,7 +96,9 @@ def fig5_study():
     return pts
 
 
-OUT_COL = {"corrected": None, "deleted": DELETED, "laundered": TEAL, "left": ROSE_TXT, "other": "white"}
+OUT_COL = {"corrected": CORRECTED, "deleted": DELETED, "laundered": BROWN, "left": LEFT, "other": OTHER}
+OUT_NAME = {"corrected": "corrected", "deleted": "deleted", "laundered": "laundered", "left": "left wrong",
+            "other": "third value"}
 
 
 def fig6_extend():
@@ -119,7 +120,7 @@ def fig6_extend():
                [("tool_haiku", "Haiku, tool", AMBER, AMBER_TXT), ("feedback_haiku", "Haiku, feedback", FEEDBACK, FEEDBACK_TXT),
                 ("tool", "Sonnet, tool", AMBER, AMBER_TXT), ("feedback", "Sonnet, feedback", FEEDBACK, FEEDBACK_TXT),
                 ("tool_opus", "Opus, tool", AMBER, AMBER_TXT), ("feedback_opus", "Opus, feedback", FEEDBACK, FEEDBACK_TXT)])]
-    lft, gap, rgt, top, bot = 1.42, 1.18, 0.12, 0.5, 0.36
+    lft, gap, rgt, top, bot = 1.42, 1.18, 0.62, 0.5, 0.36
     pw = (W - 2 * lft - rgt + (lft - gap) - 0.0) / 2
     pw = (W - lft - gap - rgt) / 2
     stats = {}
@@ -132,19 +133,23 @@ def fig6_extend():
                 continue
             n = sum(r[f"n_{k}"] for r in rs for k in kinds)
             x = 0
+            small = []
             stats[(i, arm)] = {}
             for o in ("corrected", "deleted", "laundered", "left", "other"):
                 v = sum(r[f"{k}_{o}"] for r in rs for k in kinds)
                 stats[(i, arm)][o] = v
                 if not v:
                     continue
-                fc = col if o == "corrected" else OUT_COL[o]
+                fc = OUT_COL[o]
                 share = 100 * v / n
-                ax.barh(y, share, 0.66, left=x, color=fc, ec=INK if o == "other" else "white",
-                        lw=0.6 if o == "other" else 0.8, hatch="////" if o == "other" else None, zorder=2)
-                if share >= 7 and o != "other":
+                ax.barh(y, share, 0.66, left=x, color=fc, ec="white", lw=0.8, zorder=2)
+                if share >= 7:
                     ctext(ax, x + share / 2, y, str(v), color=on(fc), bg=fc, ha="center", va="center")
+                else:           # too thin to hold its count: name it beside the bar
+                    small.append(f"{v} {OUT_NAME[o]}")
                 x += share
+            if small:
+                ctext(ax, 101.5, y, ", ".join(small), ha="left", va="center", color=MUTED, clip_on=False)
             stats[(i, arm)]["n"] = n
         ax.set_xlim(0, 100); ax.set_ylim(-0.5, len(arms) - 0.5)
         ax.set_yticks(ys); ax.set_yticklabels([a[1] for a in arms], fontsize=7)
@@ -158,10 +163,8 @@ def fig6_extend():
                                                         fontsize=7.2 * 1.28, family="Cormorant Garamond", weight=600,
                                                         color=INK, ha="left", va="bottom")
     seen = {o for v in stats.values() for o in v if o != "n" and v[o]}   # outcomes that never occur get no legend entry
-    handles = [Patch(fc=PURPLE, ec="none", label="Corrected (arm color)"), Patch(fc=DELETED, ec="none", label="Deleted")]
-    handles += [Patch(fc=TEAL, ec="none", label="Laundered")] if "laundered" in seen else []
-    handles += [Patch(fc=ROSE_TXT, ec="none", label="Left wrong")]
-    handles += [Patch(fc="white", ec=INK, lw=0.6, hatch="////", label="Third value")] if "other" in seen else []
+    handles = [Patch(fc=OUT_COL[o], ec="none", label=OUT_NAME[o].capitalize())
+               for o in ("corrected", "deleted", "laundered", "left", "other") if o in seen]
     fig.legend(handles=handles, loc="upper center", bbox_to_anchor=(0.5, 1.0), ncol=5, frameon=False, fontsize=MIN_FS,
                handlelength=1.3, handletextpad=0.4, columnspacing=1.4, borderpad=0.25)
     save(fig, "fig6_extend")

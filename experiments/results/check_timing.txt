@@ -1,0 +1,10 @@
+# Wall time (s) of a full recheck: release/paperanchor/bin/paperanchor check paper/main.tex
+# on each placement-study repository with its clean draft (pilot/exh4_s0/<repo>/none/{repo,clean.tex}), 3 runs, 2026-11-20
+2609.00621 0.13 0.13 0.13  main.tex: 48/48 tagged numbers recompute
+2609.00708v1 10.23 10.37 10.23  main.tex: 182/182 tagged numbers recompute
+2609.01147 0.13 0.13 0.14  main.tex: 23/23 tagged numbers recompute
+2609.01453 81.58 80.22 81.40  main.tex: 125/125 tagged numbers recompute
+2609.01515 1.09 1.09 1.08  main.tex: 137/137 tagged numbers recompute
+2609.04382 0.18 0.18 0.18  main.tex: 60/60 tagged numbers recompute
+2609.06008 0.17 0.18 0.17  main.tex: 97/97 tagged numbers recompute
+2609.08084 0.11 0.12 0.11  main.tex: 19/19 tagged numbers recompute

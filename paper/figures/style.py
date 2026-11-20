@@ -20,21 +20,26 @@ DISPLAY = "Cormorant Garamond"
 DISPLAY_SCALE = 1.28                # Cormorant has a small x-height; scale it to sit with Source Serif
 
 # ---------------------------------------------------------------- colors
+# A dark, high-contrast academic palette: Northwestern purple for PaperAnchor, deep muted inks for everything else
+# (brass, walnut, navy, hunter green, oxblood), parchment panels, and near-black warm text.
 PURPLE = "#4E2A84"       # PaperAnchor (ours)
-LIGHT = "#B6ACD1"        # purple companion: light fills
-LAVENDER = "#ECE6F6"; LAV_EDGE = "#BDB0DC"
-ARROW = "#5E5482"        # flow arrows
-INK = "#17121C"; MUTED = "#4A4352"; GRID = "#DCD6E4"
-SKIN = "#F1D2B6"
-AMBER = "#D98200"; AMBER_TXT = "#9A5800"; AMBER_FILL = "#FFF1D6"; AMBER_EDGE = "#F2C46B"
-TEAL = "#119184"; TEAL_TXT = "#0B6B62"; TEAL_FILL = "#E2F4F1"; TEAL_EDGE = "#8FCFC6"
-ROSE = "#D2457A"; ROSE_TXT = "#B02E5C"; ROSE_FILL = "#FCEFF3"; ROSE_EDGE = "#EBB8CB"
-BLUE = "#3B72C4"; BLUE_TXT = "#2F62AA"; BLUE_FILL = "#E8EFFA"; BLUE_EDGE = "#A9C1E8"
-GREEN = "#5A9A2E"; GREEN_TXT = "#3F7F24"
-BROWN = "#A8683A"; BROWN_TXT = "#8A5A33"
-SLATE = "#5D7389"; SLATE_FILL = "#EBF0F4"; SLATE_EDGE = "#B9C6D3"
-ERROR_TXT = "#C8320C"    # a wrong number
-GOLD = "#C9A045"
+PURPLE_DK = "#2E1A52"    # darkest purple (generate mode, header bars)
+PURPLE_MID = "#6C50A2"   # mid purple (feedback mode)
+LIGHT = "#A898C6"        # purple companion: light fills and outlines
+LAVENDER = "#ECE8F2"; LAV_EDGE = "#8F7DB3"
+ARROW = "#2B2530"        # flow arrows: near-black ink
+INK = "#1E1A17"; MUTED = "#4B443D"; GRID = "#D9D2C5"
+PARCH = "#F5F0E6"; PARCH_EDGE = "#A99A7C"   # parchment panel
+SKIN = "#E8C7A6"
+AMBER = "#9A6A1F"; AMBER_TXT = "#7A5214"; AMBER_FILL = "#F4EBD8"; AMBER_EDGE = "#B8955A"     # brass: offered tool
+TEAL = "#2F5D62"; TEAL_TXT = "#24494D"; TEAL_FILL = "#E3ECEB"; TEAL_EDGE = "#7E9FA1"         # deep teal: passes
+ROSE = "#8E2332"; ROSE_TXT = "#7A1D2A"; ROSE_FILL = "#F4E6E4"; ROSE_EDGE = "#B98A8C"         # oxblood: errors
+BLUE = "#2D4B73"; BLUE_TXT = "#253F61"; BLUE_FILL = "#E4E8EE"; BLUE_EDGE = "#8797AF"         # navy: audit agents
+GREEN = "#3D6B3F"; GREEN_TXT = "#2F5531"                                                     # hunter green
+BROWN = "#7A5233"; BROWN_TXT = "#5F3F27"                                                     # walnut: placebo
+SLATE = "#4F5D6B"; SLATE_FILL = "#E8E9EA"; SLATE_EDGE = "#97A0A9"                             # reviewer
+ERROR_TXT = "#A3202B"    # a wrong number
+GOLD = "#A9823A"
 
 
 def setup():
@@ -60,15 +65,17 @@ def number(ax, x, y, k, r=0.075, fc=PURPLE, fs=6.5, z=6):
     ax.text(x, y - 0.004, str(k), ha="center", va="center", color="white", fontsize=fs, weight=600, zorder=z + 1)
 
 
-def arrow(ax, p0, p1, color=ARROW, lw=2.4, rad=0.0, z=5, head=5.0, ls="-"):
-    a = FancyArrowPatch(p0, p1, arrowstyle=f"-|>,head_length={head * 0.11},head_width={head * 0.08}",
-                        connectionstyle=f"arc3,rad={rad}", color=color, lw=lw, capstyle="round",
-                        joinstyle="round", shrinkA=0, shrinkB=0, zorder=z, mutation_scale=10, linestyle=ls)
+def arrow(ax, p0, p1, color=ARROW, lw=1.3, rad=0.0, z=5, head=None, ls="-"):
+    """Straight (or gently curved) flow arrow: a thin shaft and a slim, sharp head scaled to the line width.
+    `head` is accepted for old call sites and ignored, so every arrow of the report has the same proportions."""
+    a = FancyArrowPatch(p0, p1, arrowstyle="-|>,head_length=0.62,head_width=0.3",
+                        connectionstyle=f"arc3,rad={rad}", color=color, lw=lw, capstyle="butt",
+                        joinstyle="miter", shrinkA=0, shrinkB=0, zorder=z, mutation_scale=5.5 + 2.6 * lw, linestyle=ls)
     ax.add_patch(a)
     return a
 
 
-def path_arrow(ax, pts, color=PURPLE, lw=2.6, r=0.12, z=5, head=5.0, ls="-"):
+def path_arrow(ax, pts, color=ARROW, lw=1.3, r=0.08, z=5, head=None, ls="-"):
     """Polyline with rounded corners and an arrowhead at the end."""
     pts = [np.asarray(p, float) for p in pts]
     verts, codes = [pts[0]], [Path.MOVETO]
@@ -80,6 +87,6 @@ def path_arrow(ax, pts, color=PURPLE, lw=2.6, r=0.12, z=5, head=5.0, ls="-"):
     d = (pts[-1] - pts[-2]) / np.linalg.norm(pts[-1] - pts[-2])
     stop = pts[-1] - d * 0.06
     verts.append(stop); codes.append(Path.LINETO)
-    ax.add_patch(PathPatch(Path(verts, codes), fc="none", ec=color, lw=lw, capstyle="round", joinstyle="round",
+    ax.add_patch(PathPatch(Path(verts, codes), fc="none", ec=color, lw=lw, capstyle="butt", joinstyle="round",
                            zorder=z, linestyle=ls))
     arrow(ax, stop - d * 0.01, pts[-1], color=color, lw=lw, z=z, head=head)

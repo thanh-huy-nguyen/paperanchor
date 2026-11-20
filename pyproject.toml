@@ -8,6 +8,7 @@ version = "0.1.0"
 description = "Every number in a paper recomputes from the repository's raw data: a recipe per number, checked at each edit."
 readme = "README.md"
 license = { text = "MIT" }
+authors = [{ name = "Thanh-Huy Nguyen" }, { name = "Ulas Bagci" }]
 requires-python = ">=3.10"
 dependencies = []
 keywords = ["latex", "papers", "research", "reproducibility", "agents", "claude-code"]

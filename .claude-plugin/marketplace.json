@@ -1,7 +1,7 @@
 {
   "name": "plumbline",
   "owner": {
-    "name": "The Plumbline authors"
+    "name": "Thanh-Huy Nguyen"
   },
   "metadata": {
     "description": "Plumbline: every number a coding agent writes into a paper recomputes from the repository's raw data."

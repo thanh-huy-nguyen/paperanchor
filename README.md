@@ -187,9 +187,10 @@ command-line tool and the git hook.
 ## Citation
 
 ```bibtex
-@techreport{plumbline2026,
+@techreport{nguyen2026plumbline,
   title  = {Plumbline: Trust the Writing Agent, Recompute Its Numbers},
-  author = {The Plumbline authors},
+  author = {Nguyen, Thanh-Huy and Bagci, Ulas},
+  institution = {Northwestern University},
   year   = {2026},
   url    = {https://github.com/thanh-huy-nguyen/plumbline}
 }

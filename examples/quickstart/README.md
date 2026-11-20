@@ -1,12 +1,12 @@
 # Quickstart: a paper whose numbers recompute
 
-This folder is a tiny project in the layout Plumbline expects: raw results in `results/`, the paper in `paper/`, and
+This folder is a tiny project in the layout PaperAnchor expects: raw results in `results/`, the paper in `paper/`, and
 one recipe per number in `paper/sources.py`.
 
 ```bash
 cd examples/quickstart
-plumbline check        # main.tex: 3/3 tagged numbers recompute
-plumbline run          # what each recipe returns, and the files it read
+paperanchor check        # main.tex: 3/3 tagged numbers recompute
+paperanchor run          # what each recipe returns, and the files it read
 ```
 
 Now break a number. Change `81.8\%` to `84.8\%` in `paper/main.tex` and run the check again:

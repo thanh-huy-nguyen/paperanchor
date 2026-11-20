@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from plumbline.sources import check, fill, snapshot  # noqa: E402
+from paperanchor.sources import check, fill, snapshot  # noqa: E402
 
 PRE = "\\documentclass{article}\n\\providecommand{\\src}[1]{}\n\\begin{document}\n"
 END = "\n\\end{document}\n"

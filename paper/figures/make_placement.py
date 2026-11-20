@@ -1,4 +1,4 @@
-"""Placement-study figures of the Plumbline report.
+"""Placement-study figures of the PaperAnchor report.
 
 fig5_study:   the full placement study, paper by paper (left) and cost against outcome (right).
 fig6_extend:  the two extensions: a writer told to protect its results, and other writer sizes.

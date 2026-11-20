@@ -1,4 +1,4 @@
-# PlumbBench: the experiments behind the paper
+# AnchorBench: the experiments behind the paper
 
 This folder holds what is needed to inspect and rerun the studies of the technical report: the harness as it was run,
 the analysis plans that were fixed in advance, the identifiers of the papers and repositories, and the per-session
@@ -19,7 +19,7 @@ Exhibit 5 its extensions.
 
 - `harness/` is the research code as run: `bench/` (one script per study), `evw/` (the checker and the model-call
   wrapper), `hooks/evidence_gate.py` (the hook, including the random-denial placebo mode), `bin/run_recipe.py`.
-  The released tool in `plumbline/` at the repository root is the same checker and hook, packaged, with three later
+  The released tool in `paperanchor/` at the repository root is the same checker and hook, packaged, with three later
   fixes to how typeset numbers are read (`1{,}559`, `$-$6.0`, and the same digits with two signs on one line).
 - `plans/` are the analysis plans, unchanged since they were written.
 - `manifests/` list the 60 arXiv papers of the reviewer study, the 10 repositories of the writing study and the 8 of

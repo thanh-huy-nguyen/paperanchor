@@ -1,4 +1,4 @@
-% Plumbline: Trust the Writing Agent, Recompute Its Numbers
+% PaperAnchor: Trust the Writing Agent, Recompute Its Numbers
 % Build: tectonic -X compile main.tex   (figures: python figures/make_*.py)
 \documentclass[10.5pt]{extarticle}
 
@@ -23,7 +23,7 @@
 \usepackage{listings}
 \usepackage[most]{tcolorbox}
 \usepackage[colorlinks=true,linkcolor=nwpurple,citecolor=nwpurple,urlcolor=nwpurple,
-  pdftitle={Plumbline: Trust the Writing Agent, Recompute Its Numbers},pdfauthor={Thanh-Huy Nguyen, Ulas Bagci}]{hyperref}
+  pdftitle={PaperAnchor: Trust the Writing Agent, Recompute Its Numbers},pdfauthor={Thanh-Huy Nguyen, Ulas Bagci}]{hyperref}
 
 % ---------------------------------------------------------------------------------------------------------------- colors
 \definecolor{nwpurple}{HTML}{4E2A84}
@@ -44,10 +44,10 @@
 
 % ---------------------------------------------------------------------------------------------------------------- names
 \newcommand{\logo}{\raisebox{-0.17em}{\includegraphics[height=1.15em]{figures/logo.pdf}}}
-\newcommand{\tool}{\textsc{Plumbline}}
-\newcommand{\bench}{\textsc{PlumbBench}}
+\newcommand{\tool}{\textsc{PaperAnchor}}
+\newcommand{\bench}{\textsc{AnchorBench}}
 \newcommand{\papertitle}{Trust the Writing Agent, Recompute Its Numbers}
-\newcommand{\repourl}{https://github.com/thanh-huy-nguyen/plumbline}   % set to the public repository before release
+\newcommand{\repourl}{https://github.com/thanh-huy-nguyen/paperanchor}
 \newcommand{\code}[1]{\texttt{#1}}
 \newcommand{\srcmacro}{\texttt{\textbackslash src\{key\}}}
 \newcommand{\valmacro}{\texttt{\textbackslash val[d]\{key\}}}
@@ -104,14 +104,14 @@
 \newtcolorbox{promptbox}[1]{enhanced,breakable,colback=codebg,colframe=lavedge,colbacktitle=lavender,coltitle=ink,
   boxrule=0.5pt,arc=2pt,left=6pt,right=6pt,top=4pt,bottom=4pt,fonttitle=\small\bfseries,fontupper=\footnotesize,
   title={#1},before skip=0.6em,after skip=0.6em}
-\lstdefinestyle{plumb}{basicstyle=\ttfamily\footnotesize,columns=fullflexible,upquote=true,keepspaces=true,showstringspaces=false,
+\lstdefinestyle{code}{basicstyle=\ttfamily\footnotesize,columns=fullflexible,upquote=true,keepspaces=true,showstringspaces=false,
   breaklines=true,breakatwhitespace=true,backgroundcolor=\color{codebg},frame=single,rulecolor=\color{lavedge},
   framesep=5pt,xleftmargin=6pt,xrightmargin=6pt,aboveskip=0.7em,belowskip=0.6em,
   keywordstyle=\color{nwpurple},stringstyle=\color{teal},commentstyle=\color{muted}\itshape,
   }
-\lstdefinestyle{plain}{style=plumb,frame=none,backgroundcolor={},xleftmargin=0pt,xrightmargin=0pt,aboveskip=0.2em,
+\lstdefinestyle{plain}{style=code,frame=none,backgroundcolor={},xleftmargin=0pt,xrightmargin=0pt,aboveskip=0.2em,
   belowskip=0.2em}
-\lstset{style=plumb}
+\lstset{style=code}
 
 \begin{document}
 \thispagestyle{first}

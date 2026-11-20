@@ -1,6 +1,6 @@
 # Paper
 
-`plumbline.pdf` is the technical report. To rebuild it from source:
+`paperanchor.pdf` is the technical report. To rebuild it from source:
 
 ```bash
 tectonic -X compile main.tex        # or: latexmk -xelatex main.tex

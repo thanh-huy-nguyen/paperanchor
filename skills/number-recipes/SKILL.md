@@ -1,6 +1,6 @@
 ---
 name: number-recipes
-description: Use when writing or revising numbers in a LaTeX paper (paper/*.tex) inside a repository that has paper/sources.py, or when the user asks to make a paper's numbers checkable against the repository's data. Explains the \src tag and recipe convention that the Plumbline hooks check.
+description: Use when writing or revising numbers in a LaTeX paper (paper/*.tex) inside a repository that has paper/sources.py, or when the user asks to make a paper's numbers checkable against the repository's data. Explains the \src tag and recipe convention that the PaperAnchor hooks check.
 ---
 
 # Numbers that recompute from the data
@@ -25,8 +25,8 @@ recipes at each edit and report (or, in gate mode, refuse) any number that does 
    `source` and `load` are provided; do not import or define them. One function per key. No rounding and no
    hard-coded printed values inside a recipe.
 3. Print the number with its tag right after it (after `\%` if present): `70.4\%\src{acc12}`. Or write
-   `\val[1]{acc12}` and let `plumbline fill` insert the value.
-4. Check: `plumbline check`. To see values: `plumbline run acc12`.
+   `\val[1]{acc12}` and let `paperanchor fill` insert the value.
+4. Check: `paperanchor check`. To see values: `paperanchor run acc12`.
 
 The paper's preamble needs `\providecommand{\src}[1]{}` and `\providecommand{\val}[2][1]{}`.
 
@@ -38,5 +38,5 @@ recipe just so it reproduces a printed number; if the data cannot support a clai
 
 ## Setting up a new paper
 
-Run `plumbline init` at the repository root. It creates `paper/sources.py` (which turns the hooks on for this project)
+Run `paperanchor init` at the repository root. It creates `paper/sources.py` (which turns the hooks on for this project)
 and snapshots the repository so recipes can only read files that existed before the session.

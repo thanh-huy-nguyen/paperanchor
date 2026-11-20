@@ -1,21 +1,21 @@
 """Claude Code hooks: numbers written into paper/*.tex must be recomputable from the repository's data.
 
-Four entry points (the first argument of `python -m plumbline.gate`, or called from plumbline.hook):
+Four entry points (the first argument of `python -m paperanchor.gate`, or called from paperanchor.hook):
 
     init <root>  snapshot the repository (files recipes may read) and the paper as approved; run before a session
     pre          PreToolUse on Edit|MultiEdit|Write|Bash
     post         PostToolUse on Edit|MultiEdit|Write|Bash
     stop         Stop
 
-Modes (PLUMBLINE_MODE):
+Modes (PAPERANCHOR_MODE):
     gate      (default) an edit to paper/*.tex that adds or changes a number without a working recipe is denied;
               a shell command that changes a .tex file is reverted; the session cannot stop while any tagged number
-              fails (at most PLUMBLINE_MAX_STOP_BLOCKS times, default 3)
+              fails (at most PAPERANCHOR_MAX_STOP_BLOCKS times, default 3)
     feedback  edits always go through; after each one the agent is told which numbers failed, never blocked
     log       nothing is shown to the agent; decisions are only logged
 
-State lives outside the repository in PLUMBLINE_STATE (default ~/.cache/plumbline/<hash of the root>), so the agent
-cannot edit it by accident. Every decision is appended to PLUMBLINE_LOG if set.
+State lives outside the repository in PAPERANCHOR_STATE (default ~/.cache/paperanchor/<hash of the root>), so the agent
+cannot edit it by accident. Every decision is appended to PAPERANCHOR_LOG if set.
 
 Settings (pass with ``claude --settings``)::
 
@@ -35,7 +35,7 @@ import sys
 import time
 from pathlib import Path
 
-from plumbline.sources import check, deny_message, snapshot
+from paperanchor.sources import check, deny_message, snapshot
 
 _SHELL_WRITE = re.compile(r"(>|\btee\b|\bsed\s+-i|\bperl\s+-p?i|\bcp\b|\bmv\b|\bdd\b|python|\bawk\b|truncate|rm\b)")
 
@@ -46,8 +46,8 @@ _SHELL_WRITE = re.compile(r"(>|\btee\b|\bsed\s+-i|\bperl\s+-p?i|\bcp\b|\bmv\b|\b
 
 
 def env(name: str, default: str | None = None) -> str | None:
-    """PLUMBLINE_<NAME>; the EVW_<NAME> spelling of the experiment harness is accepted as a fallback."""
-    return os.environ.get(f"PLUMBLINE_{name}") or os.environ.get(f"EVW_{name}") or default
+    """PAPERANCHOR_<NAME>; the EVW_<NAME> spelling of the experiment harness is accepted as a fallback."""
+    return os.environ.get(f"PAPERANCHOR_{name}") or os.environ.get(f"EVW_{name}") or default
 
 
 def state_dir(root: Path) -> Path:
@@ -55,11 +55,11 @@ def state_dir(root: Path) -> Path:
     if d:
         return Path(d)
     h = hashlib.sha256(str(root.resolve()).encode()).hexdigest()[:16]
-    return Path.home() / ".cache" / "plumbline" / h
+    return Path.home() / ".cache" / "paperanchor" / h
 
 
 def find_root(cwd: Path) -> Path | None:
-    """PLUMBLINE_ROOT if set, else the nearest directory at or above cwd that has a paper/ folder."""
+    """PAPERANCHOR_ROOT if set, else the nearest directory at or above cwd that has a paper/ folder."""
     if env("ROOT"):
         return Path(env("ROOT"))
     for d in [cwd, *cwd.parents]:

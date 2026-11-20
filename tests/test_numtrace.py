@@ -6,7 +6,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from plumbline.numtrace import EvidenceMatcher, build_evidence_index, extract_paper_numbers, gate, trace  # noqa: E402
+from paperanchor.numtrace import EvidenceMatcher, build_evidence_index, extract_paper_numbers, gate, trace  # noqa: E402
 
 PAPER = r"""
 \documentclass{article}
@@ -79,7 +79,7 @@ class NumTraceTest(unittest.TestCase):
 
 class SciNotationTest(unittest.TestCase):
     def test_latex_scientific_notation(self):
-        from plumbline.numtrace import normalize_sci
+        from paperanchor.numtrace import normalize_sci
 
         self.assertEqual(normalize_sci("5.45\\times 10^{-5}"), "5.45e-5")
         self.assertEqual(normalize_sci("order of $10^{-14}$"), "order of $1e-14$")

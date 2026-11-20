@@ -1,5 +1,5 @@
 {
-  "name": "plumbline",
+  "name": "paperanchor",
   "version": "0.1.0",
   "description": "Every number a coding agent writes into paper/*.tex must recompute from the repository's raw data: a short recipe per number, checked by hooks at each edit.",
   "keywords": [
@@ -34,6 +34,6 @@
     "name": "Thanh-Huy Nguyen and Ulas Bagci"
   },
   "license": "MIT",
-  "homepage": "https://github.com/thanh-huy-nguyen/plumbline",
-  "repository": "https://github.com/thanh-huy-nguyen/plumbline"
+  "homepage": "https://github.com/thanh-huy-nguyen/paperanchor",
+  "repository": "https://github.com/thanh-huy-nguyen/paperanchor"
 }

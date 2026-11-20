@@ -1,4 +1,4 @@
-"""Figure 2 (overview) of the Plumbline report: one edit, checked at the edit, and the six places a check can sit.
+"""Figure 2 (overview) of the PaperAnchor report: one edit, checked at the edit, and the six places a check can sit.
 
 Top row: a writing agent changes a number (lane 1), the hook reruns the number's recipe on the repository's raw data
 (lane 2), and the verdict returns to the agent in the same turn (lane 3). The edit, the recipe and the message are

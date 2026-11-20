@@ -1,13 +1,13 @@
 <p align="center">
-  <img src="assets/logo_tile.png" width="96" alt="Plumbline logo: a plumb bob resting on a decimal point">
+  <img src="assets/logo_tile.png" width="96" alt="PaperAnchor logo: an anchor resting on a decimal point">
 </p>
 
-<h1 align="center">Plumbline</h1>
+<h1 align="center">PaperAnchor</h1>
 
 <p align="center"><b>Trust the writing agent, recompute its numbers.</b></p>
 
 <p align="center">
-  <a href="paper/plumbline.pdf">Paper</a> ·
+  <a href="paper/paperanchor.pdf">Paper</a> ·
   <a href="#install">Install</a> ·
   <a href="examples/quickstart">Quickstart</a> ·
   <a href="experiments">Experiments</a>
@@ -20,13 +20,13 @@
   <img alt="No dependencies" src="https://img.shields.io/badge/dependencies-none-119184">
 </p>
 
-Coding agents now write papers from the repositories they work in. Plumbline makes every number such an agent types
+Coding agents now write papers from the repositories they work in. PaperAnchor makes every number such an agent types
 recompute from the repository's raw data. The agent leaves a short recipe beside each number, and a hook reruns the
 recipe the moment the number is typed. A number that does not follow from its recipe comes back to the agent with the
 value the data gives, in the same turn.
 
 <p align="center">
-  <img src="assets/overview.png" width="900" alt="One edit checked by Plumbline, and the six places a number check can sit">
+  <img src="assets/overview.png" width="900" alt="One edit checked by PaperAnchor, and the six places a number check can sit">
 </p>
 
 ```latex
@@ -52,7 +52,7 @@ The check is deterministic, makes no model call, and has no dependencies beyond 
 
 ## Why at the edit
 
-We measured where a number check should sit in a writing agent's loop ([paper](paper/plumbline.pdf)). Three results
+We measured where a number check should sit in a writing agent's loop ([paper](paper/paperanchor.pdf)). Three results
 decide the design.
 
 **A reviewer does not do this job.** LLM reviewers of three sizes quoted planted wrong numbers in more than nine of
@@ -72,9 +72,9 @@ left as many as no check at all.
 | Check command and rules in the prompt | 2.96 | 6.6 |
 | Placebo: random refusals at the gate's rate | 2.71 | 16.5 |
 | Opus audit at the end of the session | 0.12 | 14.0 |
-| **Plumbline, feedback after each edit** (default) | **0** | 8.7 |
-| **Plumbline, blocking gate** | **0** | 19.9 |
-| **Plumbline, generate mode** | **0** | 7.8 |
+| **PaperAnchor, feedback after each edit** (default) | **0** | 8.7 |
+| **PaperAnchor, blocking gate** | **0** | 19.9 |
+| **PaperAnchor, generate mode** | **0** | 7.8 |
 
 <p align="center">
   <img src="assets/study.png" width="820" alt="Planted errors left in each of 24 papers under seven placements of the check">
@@ -94,16 +94,16 @@ and Opus left none of 46; with feedback after each edit, no writer left any.
 As a Claude Code plugin:
 
 ```bash
-claude plugin marketplace add thanh-huy-nguyen/plumbline
-claude plugin install plumbline@plumbline
+claude plugin marketplace add thanh-huy-nguyen/paperanchor
+claude plugin install paperanchor@paperanchor
 ```
 
-or for one session from a clone: `claude --plugin-dir /path/to/plumbline`.
+or for one session from a clone: `claude --plugin-dir /path/to/paperanchor`.
 
 Then, at the root of the repository that holds `paper/main.tex`:
 
 ```bash
-plumbline init        # creates paper/sources.py, which turns the hooks on for this project only
+paperanchor init        # creates paper/sources.py, which turns the hooks on for this project only
 ```
 
 Add two lines to the paper's preamble so the tags print nothing:
@@ -118,8 +118,8 @@ The hooks do nothing in a project without `paper/sources.py`.
 Without Claude Code, install the command-line tool alone:
 
 ```bash
-pip install git+https://github.com/thanh-huy-nguyen/plumbline
-plumbline check
+pip install git+https://github.com/thanh-huy-nguyen/paperanchor
+paperanchor check
 ```
 
 ## What runs when
@@ -141,35 +141,35 @@ A number passes when three rules hold:
 
 ## Modes
 
-Set the mode with `/plugin configure plumbline` (option `mode`) or the `PLUMBLINE_MODE` environment variable.
+Set the mode with `/plugin configure paperanchor` (option `mode`) or the `PAPERANCHOR_MODE` environment variable.
 
 - `feedback` (default): edits always go through, and the agent is told which numbers fail after each one. In our study
   it reached the gate's outcome in fewer than half the turns.
 - `gate`: edits whose numbers do not recompute are denied, shell writes to `.tex` files are reverted, and the session
   cannot end while a tagged number fails. Use it for unattended runs.
-- `log`: nothing is shown to the agent. Set `PLUMBLINE_LOG` to a file to record every decision.
+- `log`: nothing is shown to the agent. Set `PAPERANCHOR_LOG` to a file to record every decision.
 
-In generate mode the agent writes `\val[1]{acc}` instead of typing the number, and `plumbline fill` inserts the
+In generate mode the agent writes `\val[1]{acc}` instead of typing the number, and `paperanchor fill` inserts the
 recipe's value, so rerunning the experiments updates the paper.
 
 ## Commands
 
 ```bash
-plumbline init             # opt this project in and snapshot the repository
-plumbline check            # every tagged number and \val in paper/*.tex; exit 1 if any fails
-plumbline run [key ...]    # what each recipe returns, and the files it read
-plumbline fill IN OUT      # generate mode: replace each \val[d]{key} with its recipe's value
-plumbline git-hook         # pre-commit hook that runs `plumbline check` on staged paper/*.tex
+paperanchor init             # opt this project in and snapshot the repository
+paperanchor check            # every tagged number and \val in paper/*.tex; exit 1 if any fails
+paperanchor run [key ...]    # what each recipe returns, and the files it read
+paperanchor fill IN OUT      # generate mode: replace each \val[d]{key} with its recipe's value
+paperanchor git-hook         # pre-commit hook that runs `paperanchor check` on staged paper/*.tex
 ```
 
-`plumbline check` works in continuous integration, and the pre-commit hook holds a co-author who edits a number by
+`paperanchor check` works in continuous integration, and the pre-commit hook holds a co-author who edits a number by
 hand to the same recipes as the agent.
 
 ## Limits
 
 A recipe can compute the right value for a different claim, for example a count that includes variants the sentence
 excludes. `means=` records what the writer says the recipe computes, so a reader or a second model can compare it with
-the sentence; Plumbline does not. Numbers that were in the paper before the session and carry no tag are not checked,
+the sentence; PaperAnchor does not. Numbers that were in the paper before the session and carry no tag are not checked,
 and bare integers below 10 are skipped. The hooks target Claude Code; other agents and editors are covered through the
 command-line tool and the git hook.
 
@@ -177,22 +177,22 @@ command-line tool and the git hook.
 
 | Path | What it holds |
 |---|---|
-| `plumbline/` | The checker, the hooks and the command-line tool (Python, no dependencies) |
+| `paperanchor/` | The checker, the hooks and the command-line tool (Python, no dependencies) |
 | `.claude-plugin/`, `hooks/`, `scripts/`, `skills/`, `bin/` | The Claude Code plugin |
 | `examples/quickstart/` | A tiny project to try the tool on |
-| `experiments/` | PlumbBench: the code, analysis plans and results behind the paper |
+| `experiments/` | AnchorBench: the code, analysis plans and results behind the paper |
 | `paper/` | The technical report, its LaTeX source and figure scripts |
 | `tests/` | Unit tests (`python -m unittest discover -s tests`) |
 
 ## Citation
 
 ```bibtex
-@techreport{nguyen2026plumbline,
-  title  = {Plumbline: Trust the Writing Agent, Recompute Its Numbers},
+@techreport{nguyen2026paperanchor,
+  title  = {PaperAnchor: Trust the Writing Agent, Recompute Its Numbers},
   author = {Nguyen, Thanh-Huy and Bagci, Ulas},
   institution = {Northwestern University},
   year   = {2026},
-  url    = {https://github.com/thanh-huy-nguyen/plumbline}
+  url    = {https://github.com/thanh-huy-nguyen/paperanchor}
 }
 ```
 

@@ -1,4 +1,4 @@
-"""Plots for the Plumbline technical report (fig2_reviewers, fig3_checkers, fig4_placement).
+"""Plots for the PaperAnchor technical report (fig2_reviewers, fig3_checkers, fig4_placement).
 
 Every number is read from the pilot result files, except fig3, whose counts come from a hand-labeled table in
 notes/07_pilot_log.md (hard-coded below with a pointer to the section).
@@ -37,7 +37,7 @@ GRAY_NOCHECK = "#9A9A9A"     # gray is reserved for "no check"
 GRAY_TXT = "#5F5F5F"
 ROSE_LIGHT = "#EDA9C2"       # 1 wrong number (light companion of rose = 5 wrong numbers)
 BLUE_LIGHT = "#BCD0EE"       # Opus audit at the strict cutoff (light companion of blue)
-FEEDBACK = "#9C8BCB"         # mid purple: Plumbline feedback mode
+FEEDBACK = "#9C8BCB"         # mid purple: PaperAnchor feedback mode
 FEEDBACK_TXT = "#5B4A8F"
 DELETED = "#EADCC9"          # deleted numbers (pale clay, not a method color)
 OTHER = "white"

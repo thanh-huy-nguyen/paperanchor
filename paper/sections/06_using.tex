@@ -7,17 +7,17 @@ and what happens in a session, with the choices our measurements support.
 
 \paragraph{Setup.}
 The plugin is installed once and stays silent until a project opts in. A project opts in by having a file
-\code{paper/sources.py}, which \code{plumbline init} creates:
+\code{paper/sources.py}, which \code{paperanchor init} creates:
 \begin{lstlisting}[language=bash]
-$ claude plugin marketplace add thanh-huy-nguyen/plumbline
-$ claude plugin install plumbline@plumbline
-$ cd my-project && plumbline init     # creates paper/sources.py and snapshots the repository
+$ claude plugin marketplace add thanh-huy-nguyen/paperanchor
+$ claude plugin install paperanchor@paperanchor
+$ cd my-project && paperanchor init     # creates paper/sources.py and snapshots the repository
 \end{lstlisting}
 The paper's preamble gains two lines that make the tags invisible in the typeset output. Nothing else about the
 paper changes.
 \begin{lstlisting}
 \providecommand{\src}[1]{}       % tag after a number: prints nothing
-\providecommand{\val}[2][1]{}    % placeholder filled by `plumbline fill`
+\providecommand{\val}[2][1]{}    % placeholder filled by `paperanchor fill`
 \end{lstlisting}
 
 \paragraph{What happens in a session.}
@@ -50,7 +50,7 @@ and a number that does not follow comes back with the value the data gives.
 \paragraph{Which mode to use.}
 Feedback is the default because it reached the gate's outcome with fewer than half the turns
 (Table~\ref{tab:placement}). The gate is for sessions that run unattended and must not end with a failing number.
-Generate mode suits result-heavy sections: the agent writes \valmacro{} and \code{plumbline fill} types the number,
+Generate mode suits result-heavy sections: the agent writes \valmacro{} and \code{paperanchor fill} types the number,
 so a rerun of the experiments updates the paper without another writing session. A log mode records every decision
 and shows the agent nothing, which is how we ran the arms without a check.
 
@@ -61,8 +61,8 @@ agent spends a few lines of Python on each number, and in our study it wrote few
 each one (Table~\ref{tab:placement}).
 
 \paragraph{Outside Claude Code.}
-The command-line tool does not need an agent. \code{plumbline check} verifies every tagged number of a paper and
-exits non-zero on a failure, so it can run in continuous integration, and \code{plumbline git-hook} installs it as a
+The command-line tool does not need an agent. \code{paperanchor check} verifies every tagged number of a paper and
+exits non-zero on a failure, so it can run in continuous integration, and \code{paperanchor git-hook} installs it as a
 pre-commit hook. A co-author who edits a number by hand is held to the same recipes as the agent.
 
 \paragraph{What to watch for.}

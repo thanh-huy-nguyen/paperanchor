@@ -1,4 +1,4 @@
-"""Shared colors, fonts and drawing helpers for every figure of the Plumbline report.
+"""Shared colors, fonts and drawing helpers for every figure of the PaperAnchor report.
 
 Figure text is set in Source Serif 4, titles in Cormorant Garamond (both SIL Open Font License, in fonts/).
 Coordinates of the helper functions are in the units of the axes they draw into (we use inches).
@@ -20,7 +20,7 @@ DISPLAY = "Cormorant Garamond"
 DISPLAY_SCALE = 1.28                # Cormorant has a small x-height; scale it to sit with Source Serif
 
 # ---------------------------------------------------------------- colors
-PURPLE = "#4E2A84"       # Plumbline (ours)
+PURPLE = "#4E2A84"       # PaperAnchor (ours)
 LIGHT = "#B6ACD1"        # purple companion: light fills
 LAVENDER = "#ECE6F6"; LAV_EDGE = "#BDB0DC"
 ARROW = "#5E5482"        # flow arrows

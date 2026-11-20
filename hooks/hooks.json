@@ -1,11 +1,11 @@
 {
   "description": "Recompute every tagged number in paper/*.tex at each edit (active only where paper/sources.py exists)",
   "hooks": {
-    "SessionStart": [{"hooks": [{"type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/plumbline_hook.py\" start", "timeout": 300}]}],
+    "SessionStart": [{"hooks": [{"type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/paperanchor_hook.py\" start", "timeout": 300}]}],
     "PreToolUse": [{"matcher": "Edit|MultiEdit|Write|Bash",
-      "hooks": [{"type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/plumbline_hook.py\" pre", "timeout": 900}]}],
+      "hooks": [{"type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/paperanchor_hook.py\" pre", "timeout": 900}]}],
     "PostToolUse": [{"matcher": "Edit|MultiEdit|Write|Bash",
-      "hooks": [{"type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/plumbline_hook.py\" post", "timeout": 900}]}],
-    "Stop": [{"hooks": [{"type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/plumbline_hook.py\" stop", "timeout": 900}]}]
+      "hooks": [{"type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/paperanchor_hook.py\" post", "timeout": 900}]}],
+    "Stop": [{"hooks": [{"type": "command", "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/scripts/paperanchor_hook.py\" stop", "timeout": 900}]}]
   }
 }

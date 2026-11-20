@@ -45,7 +45,7 @@ from collections import Counter
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from plumbline.numtrace import PaperNumber, _token_stream, extract_paper_numbers, strip_latex
+from paperanchor.numtrace import PaperNumber, _token_stream, extract_paper_numbers, strip_latex
 
 MIN_INFORMATIVE = 10.0  # same rule as TraceConfig.min_informative: small bare integers are not checked
 _BANNED_CALLS = {"round", "floor", "ceil", "trunc", "around", "fix", "rint", "Decimal", "quantize", "format"}
@@ -469,7 +469,7 @@ def main() -> None:
     ap.add_argument("new")
     ap.add_argument("--root", default=".")
     ap.add_argument("--sources", default=None)
-    ap.add_argument("--baseline", default=None, help="JSON snapshot from plumbline.sources.snapshot")
+    ap.add_argument("--baseline", default=None, help="JSON snapshot from paperanchor.sources.snapshot")
     ap.add_argument("--fill", default=None, help="write NEW with every \\val filled in to this path")
     ap.add_argument("--json", action="store_true")
     a = ap.parse_args()

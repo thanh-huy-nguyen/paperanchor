@@ -1,4 +1,4 @@
-"""Figure 1 (teaser) of the Plumbline report: one writing session, checked by a reviewer vs. recomputed at the edit.
+"""Figure 1 (teaser) of the PaperAnchor report: one writing session, checked by a reviewer vs. recomputed at the edit.
 
 A schematic: the scores (31 -> 30 of 100) are illustrative, not measured; the measured version is fig2_reviewers.
 Icons are drawn here (agent terminal card, paper page, reviewer, recipe card, run badge) so all report diagrams match.
@@ -211,7 +211,7 @@ def main():
     # ======================= bottom row: recompute at the edit
     top, bg = rows[1][0], LAVENDER
     row_title(ax, 0.16, top - 0.15, "Recompute at the edit", PURPLE, bg)
-    ctext(ax, PX1 - 0.12, top - 0.15, "Plumbline", color=PURPLE, bg=bg, ha="right", va="center", style="italic")
+    ctext(ax, PX1 - 0.12, top - 0.15, "PaperAnchor", color=PURPLE, bg=bg, ha="right", va="center", style="italic")
     cy = top - 0.57
     ys = top - 1.0
     agent(ax, XA, cy)

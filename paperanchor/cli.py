@@ -1,10 +1,10 @@
-"""plumbline: recompute every tagged number of a paper from the repository's data.
+"""paperanchor: recompute every tagged number of a paper from the repository's data.
 
-    plumbline init            create paper/sources.py (opts this project in) and snapshot the repository
-    plumbline check [FILE]    check every tagged number and \\val in paper/*.tex (or FILE); exit 1 if any fails
-    plumbline run [KEY ...]   print what each recipe returns (no pass/fail)
-    plumbline fill IN OUT     write IN with every \\val[d]{key} replaced by its recipe's value
-    plumbline git-hook        install a git pre-commit hook that runs `plumbline check` on staged paper/*.tex
+    paperanchor init            create paper/sources.py (opts this project in) and snapshot the repository
+    paperanchor check [FILE]    check every tagged number and \\val in paper/*.tex (or FILE); exit 1 if any fails
+    paperanchor run [KEY ...]   print what each recipe returns (no pass/fail)
+    paperanchor fill IN OUT     write IN with every \\val[d]{key} replaced by its recipe's value
+    paperanchor git-hook        install a git pre-commit hook that runs `paperanchor check` on staged paper/*.tex
 
 Run from the repository root (the directory that contains paper/).
 """
@@ -15,10 +15,10 @@ import stat
 import sys
 from pathlib import Path
 
-from plumbline import gate
-from plumbline.sources import check, fill, parse_sources, run_recipes
+from paperanchor import gate
+from paperanchor.sources import check, fill, parse_sources, run_recipes
 
-WRAPPER = Path(__file__).resolve().parents[1] / "bin" / "plumbline"   # present when run from the plugin folder
+WRAPPER = Path(__file__).resolve().parents[1] / "bin" / "paperanchor"   # present when run from the plugin folder
 
 SKELETON = '''"""Recipes for the numbers in this paper. Each returns the unrounded value printed next to \\\\src{key}.
 
@@ -40,7 +40,7 @@ def root() -> Path:
     for d in [r, *r.parents]:
         if (d / "paper").is_dir():
             return d
-    sys.exit("plumbline: no paper/ folder here or above; run from the repository root")
+    sys.exit("paperanchor: no paper/ folder here or above; run from the repository root")
 
 
 def cmd_init() -> None:
@@ -83,7 +83,7 @@ def cmd_run(keys: list[str]) -> None:
 
 def cmd_fill(a: list[str]) -> None:
     if len(a) != 2:
-        sys.exit("usage: plumbline fill IN.tex OUT.tex")
+        sys.exit("usage: paperanchor fill IN.tex OUT.tex")
     Path(a[1]).write_text(fill(Path(a[0]).read_text(), root()))
     print(f"wrote {a[1]}")
 
@@ -92,13 +92,13 @@ def cmd_git_hook() -> None:
     r = root()
     git = r / ".git"
     if not git.is_dir():
-        sys.exit("plumbline: not a git repository root")
+        sys.exit("paperanchor: not a git repository root")
     h = git / "hooks" / "pre-commit"
-    run = f"{sys.executable} {WRAPPER}" if WRAPPER.exists() else f"{sys.executable} -m plumbline.cli"
+    run = f"{sys.executable} {WRAPPER}" if WRAPPER.exists() else f"{sys.executable} -m paperanchor.cli"
     if h.exists():
-        sys.exit(f"plumbline: {h} exists; add `{run} check` to it yourself")
+        sys.exit(f"paperanchor: {h} exists; add `{run} check` to it yourself")
     h.write_text(f"#!/bin/sh\nif git diff --cached --name-only | grep -qE '(^|/)paper/[^/]+\\.tex$'; then\n"
-                 f"  {run} check || {{ echo 'plumbline: fix the numbers or their "
+                 f"  {run} check || {{ echo 'paperanchor: fix the numbers or their "
                  f"recipes before committing' >&2; exit 1; }}\nfi\n")
     h.chmod(h.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
     print(f"installed {h}")
@@ -111,7 +111,7 @@ def main() -> None:
         return
     {"init": lambda: cmd_init(), "check": lambda: cmd_check(a[1:]), "run": lambda: cmd_run(a[1:]),
      "fill": lambda: cmd_fill(a[1:]), "git-hook": lambda: cmd_git_hook()}.get(
-        a[0], lambda: sys.exit(f"unknown command {a[0]!r}; see plumbline --help"))()
+        a[0], lambda: sys.exit(f"unknown command {a[0]!r}; see paperanchor --help"))()
 
 
 if __name__ == "__main__":

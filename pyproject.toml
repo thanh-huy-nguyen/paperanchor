@@ -3,7 +3,7 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "plumbline-check"
+name = "paperanchor"
 version = "0.1.0"
 description = "Every number in a paper recomputes from the repository's raw data: a recipe per number, checked at each edit."
 readme = "README.md"
@@ -14,10 +14,10 @@ dependencies = []
 keywords = ["latex", "papers", "research", "reproducibility", "agents", "claude-code"]
 
 [project.scripts]
-plumbline = "plumbline.cli:main"
+paperanchor = "paperanchor.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/thanh-huy-nguyen/plumbline"
+Homepage = "https://github.com/thanh-huy-nguyen/paperanchor"
 
 [tool.setuptools]
-packages = ["plumbline"]
+packages = ["paperanchor"]

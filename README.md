@@ -14,7 +14,6 @@
   <img alt="No dependencies" src="https://img.shields.io/badge/dependencies-none-2F5D62">
   <img alt="No model calls" src="https://img.shields.io/badge/model%20calls-zero-2F5D62">
   <a href="LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-4E2A84"></a>
-  <a href="https://github.com/thanh-huy-nguyen/paperanchor/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/thanh-huy-nguyen/paperanchor?style=social"></a>
 </p>
 
 <p align="center">
@@ -277,12 +276,6 @@ counts). Settings and conventions such as confidence levels are best left untagg
 
 Issues and pull requests are welcome, especially hooks for other agent harnesses, recipe helpers for common result
 formats, and reports of numbers the checker misreads. Please run `python -m unittest discover -s tests` first.
-
-## Star history
-
-<a href="https://star-history.com/#thanh-huy-nguyen/paperanchor&Date">
-  <img src="https://api.star-history.com/svg?repos=thanh-huy-nguyen/paperanchor&type=Date" alt="Star history chart" width="600">
-</a>
 
 ## Citation
 

@@ -96,7 +96,17 @@ def diff_numbers(old_tex: str, new_tex: str) -> list[tuple[str, PaperNumber, Pap
 
 
 def _num_pattern(text: str) -> str:
-    body = re.escape(text.lstrip("+-−")).replace(",", r"\{?,\}?")
+    t = text.lstrip("+-−")
+    m = re.fullmatch(r"(\d+(?:\.\d+)?)[eE]([-+−]?)(\d+)", t)
+    if m:
+        # 9.9e-7 was printed as 9.9\times 10^{-7} (or 10^{-7} alone for 1e-7): match the LaTeX form and the plain one
+        mant, sign, exp = re.escape(m.group(1)), m.group(2).replace("+", ""), m.group(3)
+        latex = (r"(?:" + mant + r"\s*(?:\\!\s*)*(?:\\times|\\cdot|x|×)\s*(?:\\!\s*)*)"
+                 + ("?" if m.group(1) == "1" else "") + r"10\s*\^\s*\{?\s*" + (r"[-−]" if sign else r"\+?")
+                 + r"\s*" + exp + r"\s*\}?")
+        body = r"(?:" + latex + r"|" + re.escape(t) + r")"
+    else:
+        body = re.escape(t).replace(",", r"\{?,\}?")
     return r"(?<![\w.])[-+−]?\$?\s*" + body
 
 

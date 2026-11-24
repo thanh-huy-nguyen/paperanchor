@@ -167,3 +167,15 @@ class SourcesTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class SciNotationTagTest(unittest.TestCase):
+    def test_latex_scientific_notation_links_to_its_tag(self):
+        import re
+        from paperanchor.sources import _num_pattern
+        pat = re.compile(_num_pattern("9.9e-7") + r"[\s$}]*(\\src\{([^}]*)\})?")
+        self.assertEqual(pat.search(r"$p = 9.9\times 10^{-7}$\src{p_tiny}").group(2), "p_tiny")
+        self.assertEqual(re.compile(_num_pattern("1e-14") + r"[\s$}]*(\\src\{([^}]*)\})?")
+                         .search(r"$10^{-14}$\src{k}").group(2), "k")
+        self.assertEqual(re.compile(_num_pattern("2.4e-7") + r"[\s$}]*(\\src\{([^}]*)\})?")
+                         .search(r"2.4e-7\src{k}").group(2), "k")

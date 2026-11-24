@@ -88,3 +88,11 @@ class SciNotationTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class SciPrecisionTest(unittest.TestCase):
+    def test_scientific_notation_has_its_real_precision(self):
+        from paperanchor.numtrace import _parse_number
+        self.assertEqual(_parse_number("2.4e-7"), (2.4e-7, 8))
+        self.assertEqual(_parse_number("1e-14"), (1e-14, 14))
+        self.assertEqual(_parse_number("1.2e3")[1], -1)

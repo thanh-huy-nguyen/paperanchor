@@ -68,7 +68,14 @@ def _parse_number(text: str) -> tuple[float, int] | None:
     if math.isnan(v) or math.isinf(v):
         return None
     if "e" in t.lower():
-        decimals = -1
+        # 2.4e-7 is written to 8 decimals (one in the mantissa, seven in the exponent); large exponents stay unknown
+        mant, _, exp = t.lower().partition("e")
+        md = len(mant.split(".", 1)[1]) if "." in mant else 0
+        try:
+            d = md - int(exp)
+        except ValueError:
+            d = -1
+        decimals = d if d >= 0 else -1
     elif "." in t:
         decimals = len(t.split(".", 1)[1])
     else:

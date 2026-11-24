@@ -203,6 +203,9 @@ each edit, Haiku, Sonnet and Opus writers all ended with zero planted errors.
 
 Set the mode with `/plugin configure paperanchor` (option `mode`) or the `PAPERANCHOR_MODE` environment variable.
 
+Tools that embed PaperAnchor can add import paths for recipes with `PAPERANCHOR_EXTRA_PATH` and preload modules before
+`sources.py` runs with `PAPERANCHOR_PRELOAD` (comma-separated), for example a statistics library or a sandbox.
+
 ## Commands
 
 ```bash

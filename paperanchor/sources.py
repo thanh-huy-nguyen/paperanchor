@@ -198,6 +198,13 @@ import json, os, sys, csv, io
 root, src, keys = sys.argv[1], sys.argv[2], json.loads(sys.argv[3])  # keys: {key: function name}
 os.chdir(root)
 sys.path.insert(0, root)
+# Hosts can add import paths and preload modules before sources.py runs (for example a statistics library, or a
+# sandbox that limits what recipes may open). The runner is isolated (-I), so these come from PaperAnchor's own
+# variables, not PYTHONPATH.
+for _p in reversed([p for p in os.environ.get("PAPERANCHOR_EXTRA_PATH", "").split(os.pathsep) if p]):
+    sys.path.insert(0, _p)
+for _m in [m for m in os.environ.get("PAPERANCHOR_PRELOAD", "").split(",") if m.strip()]:
+    __import__(_m.strip())
 REG = {}
 def source(key, means=""):
     def deco(f):

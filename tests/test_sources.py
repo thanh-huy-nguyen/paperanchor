@@ -119,6 +119,33 @@ class SourcesTest(unittest.TestCase):
         self.assertFalse(c.ok)
         self.assertIn("round", c.reason)
 
+    def test_module_constant_counts_only_where_read(self):
+        # a shared constant used by one helper must not make every recipe that prints the same value fail
+        (self.root / "results" / "cfg.json").write_text(json.dumps({"ratios": [5, 20]}))
+        (self.root / "paper" / "sources.py").write_text(textwrap.dedent('''
+            _RATIOS = (5, 20)
+
+            def _cfg(k):
+                return load("results/cfg.json")[k]
+
+            def _per_ratio():
+                return [r for r in _RATIOS]
+
+            @source("ratio_high", means="larger ratio, from the config")
+            def r_a():
+                return max(_cfg("ratios"))
+
+            @source("ratio_hidden", means="larger ratio, through the constant")
+            def r_b():
+                load("results/cfg.json")
+                return max(_per_ratio())
+            '''))
+        (c,) = self.run_check("The larger ratio is 20\\src{ratio_high}.")
+        self.assertTrue(c.ok, c.reason)
+        (c,) = self.run_check("The larger ratio is 20\\src{ratio_hidden}.")
+        self.assertFalse(c.ok)
+        self.assertIn("constant _RATIOS", c.reason)
+
     def test_recipe_must_read_data(self):
         (c,) = self.run_check("A value of 66.67\\src{nofile}.")
         self.assertFalse(c.ok)

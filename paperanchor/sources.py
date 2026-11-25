@@ -138,7 +138,7 @@ class Recipe:
     means: str
     func: str
     node: ast.FunctionDef
-    module_consts: list[float] = field(default_factory=list)
+    module_consts: list[tuple[float, str]] = field(default_factory=list)   # (value, constant name) it reads
 
 
 def parse_sources(path: Path) -> tuple[dict[str, Recipe], str | None]:
@@ -149,9 +149,34 @@ def parse_sources(path: Path) -> tuple[dict[str, Recipe], str | None]:
         tree = ast.parse(path.read_text(), str(path))
     except SyntaxError as e:
         return {}, f"paper/sources.py does not parse: {e}"
-    consts = [c.value for st in tree.body if isinstance(st, (ast.Assign, ast.AnnAssign))
-              for c in ast.walk(st) if isinstance(c, ast.Constant) and isinstance(c.value, (int, float))
-              and not isinstance(c.value, bool)]
+    # module-level constants by name, and module-level functions by name, so a recipe is charged only with the
+    # constants it reads, directly or through the helpers it calls (a shared constant used elsewhere is not its own)
+    named: dict[str, list[float]] = {}
+    for st in tree.body:
+        if isinstance(st, (ast.Assign, ast.AnnAssign)):
+            vals = [c.value for c in ast.walk(st.value) if st.value is not None and isinstance(c, ast.Constant)
+                    and isinstance(c.value, (int, float)) and not isinstance(c.value, bool)]
+            for t in (st.targets if isinstance(st, ast.Assign) else [st.target]):
+                for nm in ast.walk(t):
+                    if isinstance(nm, ast.Name):
+                        named.setdefault(nm.id, []).extend(vals)
+    funcs = {st.name: st for st in tree.body if isinstance(st, ast.FunctionDef)}
+
+    def reads(fn: ast.FunctionDef) -> list[tuple[float, str]]:
+        seen, todo, names = set(), [fn], set()
+        while todo:
+            f = todo.pop()
+            if f.name in seen:
+                continue
+            seen.add(f.name)
+            for nd in ast.walk(f):
+                if isinstance(nd, ast.Name) and isinstance(nd.ctx, ast.Load):
+                    if nd.id in funcs:
+                        todo.append(funcs[nd.id])
+                    elif nd.id in named:
+                        names.add(nd.id)
+        return [(v, nm) for nm in sorted(names) for v in named[nm]]
+
     out: dict[str, Recipe] = {}
     for st in tree.body:
         if not isinstance(st, ast.FunctionDef):
@@ -161,7 +186,7 @@ def parse_sources(path: Path) -> tuple[dict[str, Recipe], str | None]:
                     and dec.args and isinstance(dec.args[0], ast.Constant) and isinstance(dec.args[0].value, str)):
                 means = next((kw.value.value for kw in dec.keywords if kw.arg == "means"
                               and isinstance(kw.value, ast.Constant)), "")
-                out[dec.args[0].value] = Recipe(dec.args[0].value, str(means), st.name, st, consts)
+                out[dec.args[0].value] = Recipe(dec.args[0].value, str(means), st.name, st, reads(st))
     return out, None
 
 
@@ -193,12 +218,14 @@ def static_problems(r: Recipe, n: PaperNumber) -> list[str]:
             name = f.id if isinstance(f, ast.Name) else f.attr if isinstance(f, ast.Attribute) else ""
             if name in _BANNED_CALLS:
                 probs.append(f"recipe calls {name}(); return the unrounded value, the checker rounds")
-    lits = [c.value for c in ast.walk(r.node) if isinstance(c, ast.Constant) and isinstance(c.value, (int, float))
-            and not isinstance(c.value, bool)] + r.module_consts
-    for c in lits:
+    lits = [(c.value, "") for c in ast.walk(r.node) if isinstance(c, ast.Constant)
+            and isinstance(c.value, (int, float)) and not isinstance(c.value, bool)] + list(r.module_consts)
+    for c, name in lits:
         for v in vals:
             if v and any(abs(abs(c) * s - v) <= tol for s in (1.0, 100.0, 0.01)):
-                probs.append(f"recipe hard-codes the printed value ({c})")
+                probs.append(f"recipe hard-codes the printed value ({c})" if not name else
+                             f"recipe hard-codes the printed value ({c}) through the constant {name} in sources.py; "
+                             f"read it from the data instead")
                 break
     return sorted(set(probs))
 
